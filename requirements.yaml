@@ -1,0 +1,4 @@
+---
+- name: openstack.chrony
+  src: https://github.com/openstack/ansible-role-chrony
+  version: 1.3.0

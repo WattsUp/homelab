@@ -30,10 +30,23 @@ repos:
         exclude: \.(html|svg)$
       - id: mixed-line-ending
         args: [--fix=lf]
-
   - repo: https://github.com/codespell-project/codespell
     rev: v2.3.0
     hooks:
       - id: codespell
         additional_dependencies:
           - tomli
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.10.0
+    hooks:
+      - id: yamlfmt
+        args: [-conf, .yamlfmt.yaml]
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.29.0
+    hooks:
+      - id: yamllint
+        args: [--strict]
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v24.6.1
+    hooks:
+      - id: ansible-lint

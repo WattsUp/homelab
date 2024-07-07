@@ -1,0 +1,4 @@
+---
+ntp_clients:
+  hosts:
+    scruffy:
