@@ -10,7 +10,8 @@
       chrony_ntp_servers: ["127.0.0.1"]
       chrony_extra_options:
         - refclock PHC /dev/ptp0 offset 0
-        - local stratum 10
+        # Stratum 1 since scruffy has a GNSS clock connected via IRIG
+        - local stratum 1
         - "bindaddress {{ ip_ntp_server }}"
       chrony_acl_rules:
         - "deny all"
@@ -27,3 +28,13 @@
       become: true
       community.general.timezone:
         name: "{{ timezone }}"
+- name: Setup NTP clients
+  hosts: ntp_clients
+  roles:
+    - role: geerlingguy.ntp
+      become: true
+      ntp_timezone: "{{ timezone }}"
+      ntp_manage_config: true
+      ntp_cron_handler_enabled: true
+      ntp_servers:
+        - "ntp.{{ domain_lan }} iburst"

@@ -4,8 +4,11 @@ ansible_user: "{{ admin }}"
 domain: bradleydavis.tech
 domain_lan: lan.{{ domain }}
 timezone: America/Los_Angeles
+
 host_connection: ssh
+
 ip_top: 10
+
 vlan_management:
   name: management
   id: 88
@@ -38,6 +41,7 @@ vlan_guest:
   name: guest
   id: 901
   ip: "{{ ip_top }}.90.1"
+
 #   2 -  19: Commonly visited services are low numbered
 #  20 -  99: Other services
 # 100 - 199: Bare metal hosts end in a zero, virtualized are 1-9
@@ -47,14 +51,17 @@ ip_prometheus: "{{ vlan_management.ip }}.20"
 ip_alert_management: "{{ vlan_management.ip }}.21"
 ip_blackbox_exporter: "{{ vlan_management.ip }}.22"
 ip_dns_exporter: "{{ vlan_management.ip }}.23"
+
 ip_plex: "{{ vlan_servers.ip }}.2"
 ip_wiki: "{{ vlan_servers.ip }}.3"
 ip_wiki_db: "{{ vlan_servers.ip }}.20"
+
 ip_dns_0: "{{ vlan_networking.ip }}.2"
 ip_dns_1: "{{ vlan_networking.ip }}.3"
 ip_ntp_server: "{{ vlan_networking.ip }}.4"
 ip_reverse_proxy: "{{ vlan_networking.ip }}.5"
 ip_reverse_proxy_public: "{{ vlan_networking.ip }}.6"
 ip_ddns: "{{ vlan_networking.ip }}.20"
+
 ip_greenhouse: "{{ vlan_iot.ip }}.20"
 ip_beehive: "{{ vlan_iot.ip }}.21"

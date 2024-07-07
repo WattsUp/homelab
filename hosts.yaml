@@ -1,4 +1,8 @@
 ---
 ntp_clients:
   hosts:
+    farnsworth:
+etc_hosts:
+  hosts:
     scruffy:
+    farnsworth:
