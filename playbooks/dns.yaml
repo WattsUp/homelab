@@ -1,0 +1,7 @@
+---
+# scruffy needs hostnames to bare metal in order to ssh to them
+- name: Generate /etc/hosts file on scruffy
+  hosts: scruffy
+  roles:
+    - role: etc_hosts
+      etc_hosts_list: "{{ groups['etc_hosts'] }}"

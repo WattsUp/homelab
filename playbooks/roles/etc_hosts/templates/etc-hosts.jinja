@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+127.0.0.1   localhost
+::1         localhost
+
+# The following lines are desirable for IPv6 capable hosts.
+fe00::0     ip6-localnet
+fe00::0     ip6-mcastprefix
+fe02::1     ip6-allnodes
+fe02::2     ip6-allrouters
+
+# homelab hosts
+{% for item in etc_hosts_list %}
+{{ hostvars[item]["ip_management"] }} {{ item }}.{{ domain_lan }} {{ item }}
+{% endfor %}
