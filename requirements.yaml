@@ -8,3 +8,5 @@
   version: 3.0.3
 - name: geerlingguy.docker
   version: 7.3.0
+- name: mrlesmithjr.netplan
+  version: v0.4.1

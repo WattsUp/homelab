@@ -1,3 +1,6 @@
 # IDE files
 .venv*
 .env*
+
+# Secrets
+.vault_pass

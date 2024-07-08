@@ -1,0 +1,13 @@
+---
+- name: Setup interfaces with netplan
+  hosts: eth_netplan
+  roles:
+    - role: netplan_vlan
+      netplan_vlan_vlans: "{{ vlans }}"
+      netplan_vlan_mac: "{{ eth_services_mac }}"
+      netplan_vlan_extra_eths: "{{ vlans_extras | default({}) }}"
+      netplan_vlan_dns_addresses:
+        - "{{ ip_dns_0 }}"
+        - "{{ ip_dns_1 }}"
+      netplan_vlan_domain: "{{ domain_lan }}"
+      netplan_vlan_hw_offload: "{{ vlan_hw_offload | default(true) }}"
