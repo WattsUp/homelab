@@ -1,0 +1,8 @@
+---
+- name: Install docker
+  hosts: docker
+  roles:
+    - role: geerlingguy.pip
+      become: true
+    - role: geerlingguy.docker
+      become: true

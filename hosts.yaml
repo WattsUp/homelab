@@ -6,3 +6,6 @@ etc_hosts:
   hosts:
     scruffy:
     farnsworth:
+docker:
+  hosts:
+    scruffy:
