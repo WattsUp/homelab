@@ -6,3 +6,24 @@
       become: true
     - role: geerlingguy.docker
       become: true
+- name: Setup docker networking
+  hosts: docker
+  tasks:
+    - name: Prune unused networks
+      become: true
+      community.docker.docker_prune:
+        networks: true
+    - name: Configure docker networking
+      become: true
+      community.docker.docker_network:
+        name: "{{ 'vlan-' + item.name }}"
+        driver: ipvlan
+        ipam_config:
+          - subnet: "{{ vlan_dict.ip }}.0/24"
+            gateway: "{{ vlan_dict.ip }}.1"
+        driver_options:
+          parent: "eth-serv.{{ vlan_dict.id }}"
+      vars:
+        vlan_name: "{{ 'vlan_' + item.name }}"
+        vlan_dict: "{{ lookup('ansible.builtin.vars', vlan_name) }}"
+      loop: "{{ vlans }}"
