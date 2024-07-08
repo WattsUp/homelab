@@ -12,3 +12,6 @@ eth_netplan:
 docker:
   hosts:
     scruffy:
+nameservers:
+  hosts:
+    scruffy:

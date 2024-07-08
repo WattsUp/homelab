@@ -6,6 +6,8 @@ ip_management: "{{ vlan_management.ip }}.100"
 
 eth_services_mac: "{{ vault_hw_mac_eth_1 }}"
 
+is_dns_primary: false
+
 vlans:
   - name: management
   - name: networking

@@ -1,0 +1,20 @@
+---
+pihole_hostname: pihole
+pihole_domain: "{{ ansible_domain }}"
+
+pihole_password: admin
+
+pihole_network: default
+pihole_ip: "0.0.0.0"
+
+pihole_dhcp_subnet: "192.168.1.0/24"
+pihole_dhcp_server: "192.168.1.1"
+
+pihole_hostnames: []
+# - name: reverse-proxy
+#   ip: 192.168.1.2
+
+# List of wildcard domains pointing to reverse proxy
+pihole_wildcard: []
+# - domain: example.com
+#   ip: 192.168.1.2
