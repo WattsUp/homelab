@@ -27,9 +27,9 @@
         - domain: "{{ domain_lan }}"
           ip: "{{ ip_reverse_proxy }}"
       pihole_extra_hosts:
-        - host: dns0
+        - host: direct.dns0
           ip: "{{ ip_dns_0 }}"
-        - host: dns1
+        - host: direct.dns1
           ip: "{{ ip_dns_1 }}"
         - host: ntp
           ip: "{{ ip_ntp_server }}"

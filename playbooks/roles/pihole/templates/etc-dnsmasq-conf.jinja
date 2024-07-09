@@ -8,6 +8,7 @@ address=/{{ item }}/{{ item }}.{{ pihole_domain }}/{{ hostvars[item]["ip_managem
 address=/{{ item.host }}/{{ item.host }}.{{ pihole_domain }}/{{ item.ip }}
 {% endfor %}
 
+# Wildcard servers
 {% if pihole_wildcard is defined %}
 {% for item in pihole_wildcard %}
 address=/{{ item.domain }}/{{ item.ip }}
