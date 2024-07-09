@@ -20,3 +20,6 @@ docker:
 nameservers:
   hosts:
     scruffy:
+pve:
+  hosts:
+    nibbler:

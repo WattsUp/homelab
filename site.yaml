@@ -1,3 +1,11 @@
 ---
+- name: Networking
+  import_playbook: playbooks/networking.yaml
+- name: Proxmox
+  import_playbook: playbooks/proxmox.yaml
+- name: Docker
+  import_playbook: playbooks/docker.yaml
+- name: DNS
+  import_playbook: playbooks/dns.yaml
 - name: Time
   import_playbook: playbooks/time.yaml
