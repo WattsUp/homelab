@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+search {{ ifupdown_domain }}
+{% for item in ifupdown_dns_addresses %}
+nameserver {{ item }}
+{% endfor %}

@@ -2,13 +2,18 @@
 ntp_clients:
   hosts:
     farnsworth:
+    nibbler:
 etc_hosts:
   hosts:
     scruffy:
     farnsworth:
+    nibbler:
 eth_netplan:
   hosts:
     scruffy:
+eth_ifupdown:
+  hosts:
+    nibbler:
 docker:
   hosts:
     scruffy:

@@ -11,6 +11,25 @@
         - "{{ ip_dns_1 }}"
       netplan_vlan_domain: "{{ domain_lan }}"
       netplan_vlan_hw_offload: "{{ vlan_hw_offload | default(true) }}"
+- name: Setup interfaces with ifupdown
+  hosts: eth_ifupdown
+  roles:
+    - role: ifupdown
+      become: true
+      ifupdown_interfaces:
+        - interface: lo
+          type: loopback
+          mode: loopback
+        - interface: eth-mgmt
+          type: interface
+          mode: static
+          ip: "{{ ip_management }}"
+          mask: 24
+          gateway: "{{ vlan_management.ip }}.1"
+      ifupdown_dns_addresses:
+        - "{{ ip_dns_0 }}"
+        - "{{ ip_dns_1 }}"
+      ifupdown_domain: "{{ domain_lan }}"
 - name: Setup nameservers
   hosts: nameservers
   roles:
