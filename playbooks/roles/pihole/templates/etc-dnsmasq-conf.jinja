@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+
+{% for item in groups['etc_hosts'] %}
+address=/{{ item }}/{{ item }}.{{ pihole_domain }}/{{ hostvars[item]["ip_management"] }}
+{% endfor %}
+
+{% for item in pihole_extra_hosts %}
+address=/{{ item.host }}/{{ item.host }}.{{ pihole_domain }}/{{ item.ip }}
+{% endfor %}
+
+# Wildcard servers
+{% if pihole_wildcard is defined %}
+{% for item in pihole_wildcard %}
+address=/{{ item.domain }}/{{ item.ip }}
+{% endfor %}
+{% endif %}

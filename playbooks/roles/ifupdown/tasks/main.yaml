@@ -1,0 +1,17 @@
+---
+- name: Generate interfaces file
+  become: true
+  ansible.builtin.template:
+    dest: /etc/network/interfaces
+    src: etc-network-interfaces.jinja
+    mode: "0644"
+  notify:
+    - Reload network interfaces
+- name: Generate name resolution file
+  become: true
+  ansible.builtin.template:
+    dest: /etc/resolv.conf
+    src: etc-resolv-conf.jinja
+    mode: "0644"
+  notify:
+    - Reload network interfaces

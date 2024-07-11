@@ -1,0 +1,32 @@
+# {{ ansible_managed }}
+
+{% for item in ifupdown_interfaces %}
+# Configuration for {{ item.interface }}
+{% if item.type in ["interface", "bridge", "loopback"] %}
+auto {{ item.interface }}
+{% endif %}
+iface {{ item.interface }} inet {{ item.mode }}
+{% if item.mode == "static" %}
+{% if item.macAddress is defined %}
+    hwaddress {{ item.macAddress }}
+{% endif %}
+{% if item.ip is defined %}
+    address {{ item.ip}}{% if item.mask is defined %}/{{ item.mask }}{% endif %}
+{% endif %}
+
+{% if item.gateway is defined %}
+    gateway {{ item.gateway}}
+{% endif %}
+{% if item.dns is defined and item.dns|length > 0 %}
+    dns-nameservers{% for d in item.dns %} {{d}}{% endfor %}
+{% endif %}
+
+{% if item.type in ['bridge'] %}
+    bridge-ports {% if item.bridge_port is defined %}{{ item.bridge_port }}{% else %}none{% endif %}
+
+    bridge-stp off
+    bridge-fd 0
+{% endif %}
+
+{% endif %}
+{% endfor %}

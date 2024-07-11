@@ -1,0 +1,7 @@
+---
+- name: Setup proxmox
+  hosts: pve
+  become: true
+  roles:
+    - name: Setup proxmox
+      role: pve

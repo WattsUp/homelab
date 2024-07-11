@@ -1,0 +1,31 @@
+---
+ansible_connection: local
+
+eth_management_mac: "{{ vault_hw_mac_eth_f }}"
+ip_management: "{{ vlan_management.ip }}.100"
+
+eth_services_mac: "{{ vault_hw_mac_eth_1 }}"
+
+is_dns_primary: false
+
+vlans:
+  - name: management
+  - name: networking
+    ip: "{{ ip_ntp_server }}"
+vlans_extras:
+  eth-mgmt:
+    match:
+      macaddress: "{{ eth_management_mac }}"
+      name: e*
+    set-name: eth-mgmt
+    addresses:
+      - "{{ ip_management }}/24"
+    routes:
+      - to: default
+        via: "{{ vlan_management.ip }}.1"
+    nameservers:
+      search:
+        - "{{ domain_lan }}"
+      addresses:
+        - "{{ ip_dns_0 }}"
+        - "{{ ip_dns_1 }}"

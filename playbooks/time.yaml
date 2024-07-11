@@ -34,6 +34,10 @@
     - role: geerlingguy.ntp
       become: true
       ntp_timezone: "{{ timezone }}"
+      ntp_package: chrony
+      ntp_daemon: chronyd
+      ntp_config_file: /etc/chrony/chrony.conf
+      ntp_driftfile: /var/lib/ntp/drift
       ntp_manage_config: true
       ntp_cron_handler_enabled: true
       ntp_servers:

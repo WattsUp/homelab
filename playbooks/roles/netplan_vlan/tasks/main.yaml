@@ -1,0 +1,51 @@
+---
+- name: Create list of vlan attributes
+  ansible.builtin.set_fact:
+    net_vlans: "{{ (net_vlans | default([])) + vlan }}"
+  vars:
+    vlan:
+      - key: "{{ netplan_vlan_if_name }}.{{ vlan_raw.id }}"
+        value:
+          id: "{{ vlan_raw.id }}"
+          link: "{{ netplan_vlan_if_name }}"
+          addresses: "{{ addresses }}"
+          routes: "{{ route_enable | ternary(default_route, omit) }}"
+          nameservers: "{{ route_enable | ternary(nameservers, omit) }}"
+    vlan_raw: "{{ lookup('ansible.builtin.vars', 'vlan_' + item.name) }}"
+    ip: "{{ item['ip'] | default(False) }}"
+    addresses: "{{ ip | ternary([ip | string + '/24'], omit) }}"
+    route_enable: "{{ item['default_route'] | default(False) }}"
+    default_route:
+      - to: default
+        via: "{{ vlan_raw.ip }}.1"
+    nameservers:
+      search:
+        - "{{ netplan_vlan_domain }}"
+      addresses: "{{ netplan_vlan_dns_addresses }}"
+  loop: "{{ netplan_vlan_vlans }}"
+  loop_control:
+    loop_var: item
+- name: Create netplan
+  become: true
+  ansible.builtin.import_role:
+    name: mrlesmithjr.netplan
+  vars:
+    netplan_enabled: true
+    netplan_config_file: /etc/netplan/0-ansible.yaml
+    netplan_renderer: networkd
+    netplan_remove_existing: true
+    netplan_configuration:
+      network:
+        version: 2
+        ethernets: "{{ netplan_eths | combine(netplan_vlan_extra_eths) }}"
+        vlans: "{{ net_vlans | items2dict }}"
+    netplan_eths_list:
+      - key: "{{ netplan_vlan_if_name }}"
+        value:
+          match:
+            macaddress: "{{ netplan_vlan_mac }}"
+            name: e*
+          set-name: "{{ netplan_vlan_if_name }}"
+          receive-checksum-offload: "{{ netplan_vlan_hw_offload }}"
+          transmit-checksum-offload: "{{ netplan_vlan_hw_offload }}"
+    netplan_eths: "{{ netplan_eths_list | items2dict }}"

@@ -2,7 +2,29 @@
 ntp_clients:
   hosts:
     farnsworth:
+    nibbler:
+    vm0.nibbler:
 etc_hosts:
   hosts:
     scruffy:
     farnsworth:
+    nibbler:
+    vm0.nibbler:
+eth_netplan:
+  hosts:
+    scruffy:
+    vm0.nibbler:
+eth_ifupdown:
+  hosts:
+    nibbler:
+docker:
+  hosts:
+    scruffy:
+    vm0.nibbler:
+nameservers:
+  hosts:
+    scruffy:
+    vm0.nibbler:
+pve:
+  hosts:
+    nibbler:

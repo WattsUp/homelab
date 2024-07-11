@@ -1,0 +1,29 @@
+---
+- name: Check for pve-nag-buster
+  ansible.builtin.stat:
+    path: /usr/share/pve-nag-buster.sh
+  register: pve_nag_buster
+- name: Install pve-nag-buster
+  ansible.builtin.script:
+    cmd: install-pve-nag-buster.sh
+  when: not pve_nag_buster.stat.exists
+- name: Ensure Nginx is installed
+  ansible.builtin.package:
+    name: nginx
+    state: present
+- name: Remove Nginx default config
+  ansible.builtin.file:
+    state: absent
+    path: /etc/nginx/sites-enabled/
+- name: Create proxmox proxy config
+  ansible.builtin.template:
+    src: nginx-proxmox-conf.jinja
+    dest: /etc/nginx/conf.d/proxmox.conf
+    mode: "0644"
+  notify:
+    - Restart nginx
+- name: Enable Nginx
+  ansible.builtin.service:
+    name: nginx
+    enabled: true
+    state: started

@@ -1,0 +1,13 @@
+---
+ifupdown_interfaces:
+  - interface: lo
+    type: loopback
+    mode: loopback
+
+# Search domain
+ifupdown_domain: "{{ ansible_domain }}"
+
+# List of nameservers to add if default_route is true
+ifupdown_dns_addresses:
+  - "1.1.1.1"
+  - "8.8.8.8"

@@ -1,0 +1,31 @@
+---
+# Name of interface with vlan services
+netplan_vlan_if_name: eth-serv
+
+# MAC address of vlan interface for matching
+netplan_vlan_mac: "00:00:00:00:00:00"
+
+# List of vlans to connect to via eth-serv
+# netplan_vlan_vlans:
+#   - name: subnet_name
+#     ip:
+#     default_route: false
+
+# Matching vlan dictionaries
+# vlan_subnet_name:
+#   id: 1
+#   ip: "192.168.1" # Note the partial construction
+
+# Search domain
+netplan_vlan_domain: "{{ ansible_domain }}"
+
+# List of nameservers to add if default_route is true
+netplan_vlan_dns_addresses:
+  - "1.1.1.1"
+  - "8.8.8.8"
+
+# Dictionary of extra Ethernets to add (namely second untagged interface)
+netplan_vlan_extra_eths: {}
+
+# True to use HW offloading
+netplan_vlan_hw_offload: true

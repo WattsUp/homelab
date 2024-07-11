@@ -41,12 +41,15 @@ repos:
     hooks:
       - id: yamlfmt
         args: [-conf, .yamlfmt.yaml]
+        exclude: vault.yaml
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.29.0
     hooks:
       - id: yamllint
         args: [--strict]
+        exclude: vault.yaml
   - repo: https://github.com/ansible/ansible-lint
     rev: v24.6.1
     hooks:
       - id: ansible-lint
+        exclude: vault.yaml
