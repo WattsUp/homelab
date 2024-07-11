@@ -1,0 +1,14 @@
+---
+eth_services_mac: "{{ vault_hw_mac_eth_2 }}"
+
+ip_management: "{{ vlan_management.ip }}.111"
+
+is_dns_primary: true
+
+vlans:
+  - name: management
+    ip: "{{ ip_management }}"
+    default_route: true
+  - name: servers
+  - name: networking
+vlan_hw_offload: false
