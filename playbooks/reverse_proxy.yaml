@@ -32,3 +32,6 @@
           ip: "{{ hostvars['leela'].ip_management }}"
           scheme: https
           port: 443
+        - name: uptime
+          ip: "{{ ip_uptime }}"
+          port: 3001

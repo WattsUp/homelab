@@ -1,0 +1,8 @@
+---
+- name: Setup uptime monitor
+  hosts: scruffy
+  roles:
+    - role: uptime
+      become: true
+      uptime_network: "{{ 'vlan-' + vlan_management.name }}"
+      uptime_ip: "{{ ip_uptime }}"

@@ -1,0 +1,22 @@
+---
+- name: Make directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - /etc/uptime
+- name: Install uptime-kuma
+  become: true
+  community.docker.docker_container:
+    name: uptime-kuma
+    image: louislam/uptime-kuma:latest
+    networks:
+      - name: "{{ uptime_network }}"
+        ipv4_address: "{{ uptime_ip }}"
+    published_ports:
+      - 3001/tcp
+    restart_policy: unless-stopped
+    state: started
+    volumes:
+      - "/etc/uptime:/app/data:rw"
