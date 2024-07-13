@@ -1,0 +1,49 @@
+# {{ ansible_managed }}
+
+# Do no respond to plain host over https
+server {
+    listen 80 default_server;
+    if ($host ~ ^(.*)\.{{ reverse_proxy_wildcard | replace(".", "\.") }}$ ) {
+        rewrite ^(.*) https://$host$1 permanent;
+    }
+    if ($host !~ ^(.*)\.{{ reverse_proxy_wildcard | replace(".", "\.") }}$ ) {
+        rewrite ^(.*) https://$host.{{ reverse_proxy_wildcard }}$1 permanent;
+    }
+}
+
+# Catch unknown
+server {
+    listen 443 ssl default_server;
+
+    ssl_certificate /etc/nginx/certs/ssl.pem;
+    ssl_certificate_key /etc/nginx/certs/ssl.key;
+
+    return 444;
+}
+
+{% for item in reverse_proxy_services %}
+server {
+    listen 443 ssl;
+    server_name {{ item.name }}.{{ reverse_proxy_wildcard }};
+    ssl_certificate /etc/nginx/certs/{{ item.cert | default("ssl") }}.pem;
+    ssl_certificate_key /etc/nginx/certs/{{ item.cert | default("ssl")}}.key;
+
+    location / {
+        proxy_pass {{ item.scheme | default("http") }}://{{ item.ip }}:{{ item.port | default(80) }}{{ item.suffix | default('') }}/;
+        proxy_http_version 1.1;
+        proxy_set_header Host {{ item.header_host | default('$host') }};
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_hide_header X-Frame-Options;
+        proxy_set_header X-Frame-Options "SAMEORIGIN";
+        proxy_buffering off;
+        client_max_body_size 0;
+        proxy_connect_timeout  3600s;
+        proxy_read_timeout  3600s;
+        proxy_send_timeout  3600s;
+        send_timeout  3600s;
+    }
+    {{ item.server_extra | default("") }}
+}
+
+{% endfor %}

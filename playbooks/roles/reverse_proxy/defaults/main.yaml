@@ -1,0 +1,16 @@
+---
+reverse_proxy_networks:
+
+reverse_proxy_wildcard: "{{ ansible_domain }}"
+reverse_proxy_name: reverse-proxy
+reverse_proxy_conf: default
+
+# List of services to route through reverse proxy
+# {{ name }}.{{ reverse_proxy_wildcard }}:[80|443] -> {{ url }}
+reverse_proxy_services: []
+# - name: service
+#   ip: 192.168.1.2
+#   port: 80 (default)
+#   scheme: http (default)
+#   suffix: / (default)
+#   server_extra: Additional configuration to add to server declaration

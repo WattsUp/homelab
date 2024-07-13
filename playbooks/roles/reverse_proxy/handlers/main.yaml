@@ -1,0 +1,5 @@
+---
+- name: Reload Nginx
+  ansible.builtin.command:
+    cmd: "docker restart {{ reverse_proxy_name }}"
+  changed_when: true

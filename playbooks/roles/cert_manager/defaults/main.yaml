@@ -1,0 +1,18 @@
+---
+cert_manager_email:
+cert_manager_api_token:
+cert_manager_discord:
+
+# cert_manager_server: "https://acme-staging-v02.api.letsencrypt.org/directory"
+cert_manager_server: "https://acme-v02.api.letsencrypt.org/directory"
+
+cert_manager_wildcard: "{{ ansible_domain }}"
+
+cert_manager_services: []
+# - host: service
+#   domain: service.domain.tld # Omit for wildcard
+#   user: "{{ ansible_user }}" # User to run scp and ssh
+#   dest_dir: /etc/certs # Path to certificate folder, will mkdir
+#   dest_cert: cert.pem # Path to certificate
+#   dest_key: cert.key # Path to certificate key
+#   cmd: # Command to run after copying over new certificate

@@ -27,3 +27,5 @@
           ip: "{{ ip_dns_1 }}"
         - host: ntp
           ip: "{{ ip_ntp_server }}"
+        - host: pfsense
+          ip: "{{ hostvars['pfsense.nibbler'].ip_management }}"

@@ -9,6 +9,10 @@ host_connection: ssh
 
 ip_top: 10
 
+vlan_lan:
+  name: lan
+  id: 1
+  ip: "{{ ip_top }}.0.1"
 vlan_management:
   name: management
   id: 88
@@ -68,4 +72,6 @@ ip_reverse_proxy: "{{ vlan_networking.ip }}.5"
 # ip_beehive: "{{ vlan_iot.ip }}.21"
 
 # Vault items
+sysadmin_email: "{{ vault_sysadmin_email }}"
 pihole_admin_password: "{{ vault_pihole_admin_password }}"
+cloudflare_certbot_api_token: "{{ vault_cloudflare_certbot_api_token }}"

@@ -1,5 +1,5 @@
 ---
-eth_services_mac: "{{ vault_hw_mac_eth_2 }}"
+eth_services_mac: "{{ hw_mac_eth_2 }}"
 
 ip_management: "{{ vlan_management.ip }}.111"
 

@@ -1,0 +1,42 @@
+---
+- name: Copy pfsense certificate importer
+  hosts: scruffy
+  tasks:
+    - name: Copy pfsense certificate importer
+      ansible.builtin.command: >-
+        scp files/pfsense-import-certificate.php {{ user }}@{{ host}}:{{ dest }}
+      vars:
+        host: pfsense.nibbler
+        user: "{{ hostvars[host].ansible_user }}"
+        dest: /root/pfsense-import-certificate.php
+      changed_when: true
+- name: Setup certificate manager
+  hosts: scruffy
+  roles:
+    - role: cert_manager
+      become: true
+      cert_manager_email: "{{ sysadmin_email }}"
+      cert_manager_api_token: "{{ cloudflare_certbot_api_token }}"
+      cert_manager_discord: "{{ discord_info }}"
+      cert_manager_services:
+        - domain: "*.{{ domain_lan }}"
+          hosts:
+            # For reverse-proxy/
+            - host: vm0.nibbler
+              cmd: sudo docker restart reverse-proxy
+              dest_cert: /etc/nginx/certs/ssl.pem
+              dest_key: /etc/nginx/certs/ssl.key
+            # For proxmox GUI
+            - host: nibbler
+              cmd: sudo nginx -s reload
+              dest_cert: /etc/pve/local/pveproxy-ssl.pem
+              dest_key: /etc/pve/local/pveproxy-ssl.key
+            # For router & firewall
+            - host: pfsense.nibbler
+              user: root
+              sudo: false
+              cmd: >-
+                php /root/pfsense-import-certificate.php
+                /root/fullchain.pem /root/privkey.pem
+              dest_cert: /root/fullchain.pem
+              dest_key: /root/privkey.pem

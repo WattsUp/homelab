@@ -29,3 +29,7 @@ vlans_extras:
       addresses:
         - "{{ ip_dns_0 }}"
         - "{{ ip_dns_1 }}"
+
+# Vault items
+discord_info: "{{ vault_discord_info }}"
+discord_error: "{{ vault_discord_error }}"

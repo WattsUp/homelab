@@ -9,3 +9,7 @@
   import_playbook: playbooks/dns.yaml
 - name: Time
   import_playbook: playbooks/time.yaml
+- name: Certificates
+  import_playbook: playbooks/certs.yaml
+- name: Reverse proxy
+  import_playbook: playbooks/reverse_proxy.yaml

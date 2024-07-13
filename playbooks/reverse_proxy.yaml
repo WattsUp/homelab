@@ -1,0 +1,34 @@
+---
+- name: Install reverse proxy
+  hosts: vm0.nibbler
+  roles:
+    - role: reverse_proxy
+      become: true
+      reverse_proxy_networks:
+        - name: "{{ 'vlan-' + vlan_networking.name }}"
+          ipv4_address: "{{ ip_reverse_proxy }}"
+      reverse_proxy_wildcard: "{{ domain_lan }}"
+      reverse_proxy_conf: private
+      reverse_proxy_services:
+        - name: dns
+          ip: "{{ ip_dns_0 }}"
+          suffix: "/admin"
+          server_extra: rewrite ^/admin/?(.*)$ /$1 permanent;
+        - name: dns0
+          ip: "{{ ip_dns_0 }}"
+          suffix: "/admin"
+          server_extra: rewrite ^/admin/?(.*)$ /$1 permanent;
+        - name: dns1
+          ip: "{{ ip_dns_1 }}"
+          suffix: "/admin"
+          server_extra: rewrite ^/admin/?(.*)$ /$1 permanent;
+        # morbo is WAP and requires special headers to talk through proxy
+        - name: morbo
+          ip: "{{ hostvars['morbo'].ip_management }}"
+          scheme: https
+          port: 443
+          header_host: "{{ hostvars['morbo'].ip_management }}"
+        - name: leela
+          ip: "{{ hostvars['leela'].ip_management }}"
+          scheme: https
+          port: 443

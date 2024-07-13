@@ -1,0 +1,90 @@
+---
+- name: Install certbot
+  community.general.snap:
+    name: certbot
+    classic: true
+  notify:
+    - Confirm plugin containment
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+- name: Add to path
+  ansible.builtin.file:
+    src: /snap/bin/certbot
+    dest: /usr/bin/certbot
+    state: link
+- name: Install certbot-dns-cloudflare
+  community.general.snap:
+    name: certbot-dns-cloudflare
+- name: Create certbot folder
+  ansible.builtin.file:
+    path: /etc/letsencrypt
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+- name: Create ansible scripts folder
+  ansible.builtin.file:
+    path: /etc/ansible_scripts
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+- name: Copy certbot configuration
+  ansible.builtin.template:
+    src: cli-ini.jinja
+    dest: /etc/letsencrypt/cli.ini
+    owner: root
+    group: root
+    mode: "0600"
+- name: Copy cloudflare configuration
+  ansible.builtin.template:
+    src: cloudflare-ini.jinja
+    dest: /etc/letsencrypt/dnscloudflare.ini
+    owner: root
+    group: root
+    mode: "0600"
+- name: Create list of domains
+  ansible.builtin.set_fact:
+    certs: "{{ (certs | default([])) + cert }}"
+  vars:
+    certs_default:
+      - email: "{{ cert_manager_email }}"
+        domains:
+          - "{{ '*.' + cert_manager_wildcard }}"
+    cert:
+      - email: "{{ cert_manager_email }}"
+        domains:
+          - "{{ item.domain }}"
+  loop: "{{ cert_manager_services }}"
+- name: Create copy certificates script
+  ansible.builtin.template:
+    dest: "/etc/letsencrypt/renewal-hooks/deploy/{{ file }}"
+    src: deploy-sh.jinja
+    mode: "0755"
+  vars:
+    file: "{{ item.domain | replace('*.', '') }}.sh"
+  loop: "{{ cert_manager_services }}"
+- name: Create certs
+  ansible.builtin.import_role:
+    name: geerlingguy.certbot
+  vars:
+    certbot_install_method: "snap"
+    certbot_create_standalone_stop_services: []
+    certbot_certs: "{{ certs }}"
+    certbot_create_method: standalone
+    certbot_create_if_missing: true
+    certbot_auto_renew: false
+    certbot_create_command: >-
+      certbot certonly --noninteractive
+      --dns-cloudflare --dns-cloudflare-propagation-seconds 30 --agree-tos
+      --email {{ cert_item.email | default(cert_manager_email) }}
+      -d {{ cert_item.domains | join(',') }}
+- name: Create cron job for certbot renewal
+  ansible.builtin.cron:
+    name: certbot automatic renewal
+    job: >-
+      /usr/bin/certbot renew --noninteractive --quiet
+      --dns-cloudflare-propagation-seconds 30
+    minute: 30
+    hour: 3
+    user: root
