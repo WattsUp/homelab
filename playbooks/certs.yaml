@@ -1,0 +1,22 @@
+---
+- name: Setup certificate manager
+  hosts: scruffy
+  roles:
+    - role: cert_manager
+      become: true
+      cert_manager_email: "{{ sysadmin_email }}"
+      cert_manager_api_token: "{{ cloudflare_certbot_api_token }}"
+      cert_manager_discord: "{{ discord_info }}"
+      cert_manager_services:
+        - domain: "*.{{ domain_lan }}"
+          hosts:
+            # For reverse-proxy/
+            - host: vm0.nibbler
+              cmd: sudo docker restart reverse-proxy
+              dest_cert: /etc/nginx/certs/ssl.pem
+              dest_key: /etc/nginx/certs/ssl.key
+            # For proxmox GUI
+            - host: nibbler
+              cmd: sudo nginx -s reload
+              dest_cert: /etc/pve/local/pveproxy-ssl.pem
+              dest_key: /etc/pve/local/pveproxy-ssl.key

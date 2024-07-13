@@ -9,8 +9,12 @@ roles:
     version: 3.0.3
   - name: geerlingguy.docker
     version: 7.3.0
+  - name: geerlingguy.certbot
+    version: 5.1.0
   - name: mrlesmithjr.netplan
     version: v0.4.1
 collections:
   - name: community.docker
     version: 3.10.4
+  - name: community.general
+    version: 9.1.0

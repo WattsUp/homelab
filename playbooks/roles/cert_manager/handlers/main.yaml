@@ -1,0 +1,5 @@
+---
+- name: Confirm plugin containment
+  ansible.builtin.command:
+    cmd: snap set certbot trust-plugin-with-root=ok
+  changed_when: true
