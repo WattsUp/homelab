@@ -74,5 +74,10 @@ ip_reverse_proxy: "{{ vlan_networking.ip }}.5"
 
 # Vault items
 sysadmin_email: "{{ vault_sysadmin_email }}"
+
 pihole_admin_password: "{{ vault_pihole_admin_password }}"
+
+uptime_admin_password: "{{ vault_uptime_admin_password }}"
+uptime_discord: "{{ vault_uptime_discord }}"
+
 cloudflare_certbot_api_token: "{{ vault_cloudflare_certbot_api_token }}"
