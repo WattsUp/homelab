@@ -1,0 +1,24 @@
+---
+uptime_password: admin
+
+uptime_network: default
+uptime_ip: "0.0.0.0"
+
+# HTTP sources to monitor
+uptime_monitors_http: []
+# - name: Google
+#   url: https://google.com
+#   no_ssl: false (default) will ignore SSL errors
+
+# Ping sources to monitor
+uptime_monitors_ping: []
+# - name: Google
+#   ip: 192.168.1.2
+
+# DNS sources to monitor
+uptime_monitors_dns: []
+# - name: Google
+#   hostname: google.com (default)
+#   ip: 192.168.1.2 ip of DNS server
+
+uptime_discord_webhook:

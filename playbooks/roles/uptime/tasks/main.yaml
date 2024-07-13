@@ -1,0 +1,92 @@
+---
+- name: Make directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - /etc/uptime
+- name: Install uptime-kuma
+  become: true
+  community.docker.docker_container:
+    name: uptime-kuma
+    image: louislam/uptime-kuma:latest
+    networks:
+      - name: "{{ uptime_network }}"
+        ipv4_address: "{{ uptime_ip }}"
+    published_ports:
+      - 3001/tcp
+    restart_policy: unless-stopped
+    state: started
+    volumes:
+      - "/etc/uptime:/app/data:rw"
+- name: Install uptime-kuma api
+  ansible.builtin.import_role:
+    name: geerlingguy.pip
+  vars:
+    pip_install_packages:
+      - name: uptime-kuma-api
+        version: "1.2.1"
+- name: Generate url
+  ansible.builtin.set_fact:
+    uptime_url: "http://{{ uptime_ip }}:3001"
+- name: Setup credentials
+  lucasheld.uptime_kuma.setup:
+    api_url: "{{ uptime_url }}"
+    api_username: admin
+    api_password: "{{ uptime_password }}"
+- name: Generate token
+  lucasheld.uptime_kuma.login:
+    api_url: "{{ uptime_url }}"
+    api_username: admin
+    api_password: "{{ uptime_password }}"
+  register: result
+- name: Extract token
+  ansible.builtin.set_fact:
+    uptime_token: "{{ result.token }}"
+- name: Setup notifications
+  lucasheld.uptime_kuma.notification:
+    api_url: "{{ uptime_url }}"
+    api_token: "{{ uptime_token }}"
+    name: discord
+    type: discord
+    discordWebhookUrl: "{{ uptime_discord_webhook }}"
+    isDefault: true
+    applyExisting: true
+    state: present
+- name: Add HTTP monitors
+  lucasheld.uptime_kuma.monitor:
+    api_url: "{{ uptime_url }}"
+    api_token: "{{ uptime_token }}"
+    name: "{{ item.name }}"
+    type: http
+    url: "{{ item.url }}"
+    ignoreTls: "{{ item.no_ssl | default(false) }}"
+    state: present
+    notification_names:
+      - discord
+  loop: "{{ uptime_monitors_http }}"
+- name: Add ping monitors
+  lucasheld.uptime_kuma.monitor:
+    api_url: "{{ uptime_url }}"
+    api_token: "{{ uptime_token }}"
+    name: "{{ item.name }}"
+    type: ping
+    hostname: "{{ item.ip }}"
+    state: present
+    notification_names:
+      - discord
+  loop: "{{ uptime_monitors_ping }}"
+- name: Add DNS monitors
+  lucasheld.uptime_kuma.monitor:
+    api_url: "{{ uptime_url }}"
+    api_token: "{{ uptime_token }}"
+    name: "{{ item.name }}"
+    type: dns
+    hostname: "{{ item.hostname | default('google.com') }}"
+    dns_resolve_server: "{{ item.ip }}"
+    port: 53
+    state: present
+    notification_names:
+      - discord
+  loop: "{{ uptime_monitors_dns }}"

@@ -1,0 +1,46 @@
+---
+- name: Setup uptime monitor
+  hosts: scruffy
+  roles:
+    - role: uptime
+      become: true
+      uptime_password: "{{ uptime_admin_password }}"
+      uptime_network: "{{ 'vlan-' + vlan_management.name }}"
+      uptime_ip: "{{ ip_uptime }}"
+      uptime_discord_webhook: "{{ uptime_discord }}"
+      uptime_monitors_http:
+        - name: DNS Primary GUI
+          url: "https://dns0.{{ domain_lan }}"
+        - name: DNS Secondary GUI
+          url: "https://dns1.{{ domain_lan }}"
+        - name: morbo GUI
+          url: "https://morbo.{{ domain_lan }}"
+        - name: nibbler GUI
+          url: "https://nibbler.{{ domain_lan }}"
+        - name: pfsense.nibbler GUI
+          url: "https://pfsense.{{ domain_lan }}"
+      uptime_monitors_ping:
+        - name: DNS Primary Ping
+          ip: "{{ ip_dns_0 }}"
+        - name: DNS Secondary Ping
+          ip: "{{ ip_dns_1 }}"
+        - name: morbo Ping
+          ip: "{{ hostvars['morbo'].ip_management }}"
+        - name: nibbler Ping
+          ip: "{{ hostvars['nibbler'].ip_management }}"
+        - name: pfsense.nibbler Ping
+          ip: "{{ hostvars['pfsense.nibbler'].ip_management }}"
+        # Leela has 2s response time over HTTP, use ping only
+        - name: leela Ping
+          ip: "{{ hostvars['leela'].ip_management }}"
+        - name: vm0.nibbler Ping
+          ip: "{{ hostvars['vm0.nibbler'].ip_management }}"
+        - name: scruffy Ping
+          ip: "{{ hostvars['scruffy'].ip_management }}"
+        - name: ntp Ping
+          ip: "{{ ip_ntp_server }}"
+      uptime_monitors_dns:
+        - name: DNS Primary DNS
+          ip: "{{ ip_dns_0 }}"
+        - name: DNS Secondary DNS
+          ip: "{{ ip_dns_1 }}"
