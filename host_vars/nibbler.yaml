@@ -1,2 +1,3 @@
 ---
+eth_management_mac: "{{ hw_mac_eth_3 }}"
 ip_management: "{{ vlan_management.ip }}.110"

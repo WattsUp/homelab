@@ -6,7 +6,7 @@
       ansible.builtin.command: >-
         scp files/pfsense-import-certificate.php {{ user }}@{{ host}}:{{ dest }}
       vars:
-        host: pfsense
+        host: pfsense.nibbler
         user: "{{ hostvars[host].ansible_user }}"
         dest: /root/pfsense-import-certificate.php
       changed_when: true
@@ -32,7 +32,7 @@
               dest_cert: /etc/pve/local/pveproxy-ssl.pem
               dest_key: /etc/pve/local/pveproxy-ssl.key
             # For router & firewall
-            - host: pfsense
+            - host: pfsense.nibbler
               user: root
               sudo: false
               cmd: >-

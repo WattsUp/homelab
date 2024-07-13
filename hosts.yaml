@@ -2,6 +2,11 @@
 ungrouped:
   hosts:
     morbo:
+hw_nibbler:
+  hosts:
+    nibbler:
+    vm0.nibbler:
+    pfsense.nibbler:
 ntp_clients:
   hosts:
     farnsworth:
@@ -13,7 +18,7 @@ etc_hosts:
     farnsworth:
     nibbler:
     vm0.nibbler:
-    pfsense:
+    pfsense.nibbler:
 eth_netplan:
   hosts:
     scruffy:
