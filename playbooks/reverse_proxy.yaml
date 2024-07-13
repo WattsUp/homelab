@@ -22,3 +22,9 @@
           ip: "{{ ip_dns_1 }}"
           suffix: "/admin"
           server_extra: rewrite ^/admin/?(.*)$ /$1 permanent;
+        # morbo is WAP and requires special headers to talk through proxy
+        - name: morbo
+          ip: "{{ hostvars['morbo'].ip_management }}"
+          scheme: https
+          port: 443
+          header_host: "{{ hostvars['morbo'].ip_management }}"

@@ -1,4 +1,7 @@
 ---
+ungrouped:
+  hosts:
+    morbo:
 ntp_clients:
   hosts:
     farnsworth:
