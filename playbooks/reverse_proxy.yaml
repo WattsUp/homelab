@@ -28,3 +28,7 @@
           scheme: https
           port: 443
           header_host: "{{ hostvars['morbo'].ip_management }}"
+        - name: leela
+          ip: "{{ hostvars['leela'].ip_management }}"
+          scheme: https
+          port: 443

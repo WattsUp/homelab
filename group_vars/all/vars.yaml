@@ -9,6 +9,10 @@ host_connection: ssh
 
 ip_top: 10
 
+vlan_lan:
+  name: lan
+  id: 1
+  ip: "{{ ip_top }}.0.1"
 vlan_management:
   name: management
   id: 88

@@ -1,6 +1,7 @@
 ---
 ungrouped:
   hosts:
+    leela:
     morbo:
 hw_nibbler:
   hosts:
