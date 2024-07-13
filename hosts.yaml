@@ -13,6 +13,7 @@ etc_hosts:
     farnsworth:
     nibbler:
     vm0.nibbler:
+    pfsense:
 eth_netplan:
   hosts:
     scruffy:

@@ -1,4 +1,15 @@
 ---
+- name: Copy pfsense certificate importer
+  hosts: scruffy
+  tasks:
+    - name: Copy pfsense certificate importer
+      ansible.builtin.command: >-
+        scp files/pfsense-import-certificate.php {{ user }}@{{ host}}:{{ dest }}
+      vars:
+        host: pfsense
+        user: "{{ hostvars[host].ansible_user }}"
+        dest: /root/pfsense-import-certificate.php
+      changed_when: true
 - name: Setup certificate manager
   hosts: scruffy
   roles:
@@ -20,3 +31,12 @@
               cmd: sudo nginx -s reload
               dest_cert: /etc/pve/local/pveproxy-ssl.pem
               dest_key: /etc/pve/local/pveproxy-ssl.key
+            # For router & firewall
+            - host: pfsense
+              user: root
+              sudo: false
+              cmd: >-
+                php /root/pfsense-import-certificate.php
+                /root/fullchain.pem /root/privkey.pem
+              dest_cert: /root/fullchain.pem
+              dest_key: /root/privkey.pem

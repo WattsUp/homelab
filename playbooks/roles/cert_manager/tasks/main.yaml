@@ -45,7 +45,7 @@
     mode: "0600"
 - name: Create list of domains
   ansible.builtin.set_fact:
-    certs: "{{ (certs | default(certs_default)) + cert_if }}"
+    certs: "{{ (certs | default([])) + cert }}"
   vars:
     certs_default:
       - email: "{{ cert_manager_email }}"
@@ -55,7 +55,6 @@
       - email: "{{ cert_manager_email }}"
         domains:
           - "{{ item.domain }}"
-    cert_if: "{{ item.domain is defined | ternary(item, []) }}"
   loop: "{{ cert_manager_services }}"
 - name: Create copy certificates script
   ansible.builtin.template:
