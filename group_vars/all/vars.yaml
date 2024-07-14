@@ -53,7 +53,7 @@ vlan_guest:
 
 # ip_grafana: "{{ vlan_management.ip }}.2"
 ip_uptime: "{{ vlan_management.ip }}.3"
-# ip_prometheus: "{{ vlan_management.ip }}.20"
+ip_prometheus: "{{ vlan_management.ip }}.20"
 # ip_alert_management: "{{ vlan_management.ip }}.21"
 # ip_blackbox_exporter: "{{ vlan_management.ip }}.22"
 # ip_dns_exporter: "{{ vlan_management.ip }}.23"

@@ -1,0 +1,57 @@
+---
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - /etc/prometheus
+    - /etc/prometheus/rules
+    - /etc/prometheus/targets
+- name: Prometheus
+  ansible.builtin.template:
+    dest: /etc/prometheus/prometheus.yaml
+    src: prometheus-yaml.jinja
+    mode: "0644"
+  register: prometheus_configuration
+
+# Docker containers
+- name: Create prometheus docker
+  community.docker.docker_container:
+    image: prom/prometheus:v2.53.1
+    name: prometheus
+    command: >-
+      --config.file=/etc/prometheus/prometheus.yaml
+      --storage.tsdb.path=/prometheus
+      --web.console.libraries=/usr/share/prometheus/console_libraries
+      --web.console.templates=/usr/share/prometheus/consoles
+    networks:
+      - name: "{{ prometheus_network }}"
+        ipv4_address: "{{ prometheus_ip }}"
+    published_ports:
+      - 9090/tcp
+    recreate: >-
+      {{ prometheus_configuration.changed }}
+    restart_policy: unless-stopped
+    state: started
+    volumes:
+      - /etc/prometheus/rules:/etc/prometheus/rules:ro
+      - /etc/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - /etc/prometheus/targets:/etc/prometheus/targets:ro
+      - prometheus-data:/prometheus
+  register: prometheus_container
+
+# In certain situations if a manual change means prometheus in docker auto
+# restarted but a host mounted file wasn't present it'll be auto created as a
+# directory instead of a file
+- name: Check docker host file mounts
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  with_items:
+    - /etc/prometheus/prometheus.yaml
+  register: docker_file_mounts
+- name: Assert docker host file mounts
+  ansible.builtin.assert:
+    that: "item.stat.isreg"
+  with_items: "{{ docker_file_mounts.results }}"
+  no_log: true

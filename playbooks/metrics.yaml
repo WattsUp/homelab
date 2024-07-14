@@ -1,0 +1,8 @@
+---
+- name: Setup prometheus
+  hosts: scruffy
+  roles:
+    - role: prometheus
+      become: true
+      prometheus_network: "{{ 'vlan-' + vlan_management.name }}"
+      prometheus_ip: "{{ ip_prometheus }}"
