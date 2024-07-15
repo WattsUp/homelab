@@ -6,3 +6,8 @@
       become: true
       prometheus_network: "{{ 'vlan-' + vlan_management.name }}"
       prometheus_ip: "{{ ip_prometheus }}"
+      prometheus_grafana_network: "{{ 'vlan-' + vlan_management.name }}"
+      prometheus_grafana_ip: "{{ ip_grafana }}"
+      prometheus_grafana_org: "{{ domain }}"
+      prometheus_grafana_user: "{{ admin }}"
+      prometheus_grafana_password: "{{ grafana_admin_password }}"

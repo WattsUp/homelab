@@ -6,3 +6,11 @@ prometheus_static_targets:
 
 prometheus_network: default
 prometheus_ip:
+prometheus_grafana_network: default
+prometheus_grafana_ip:
+
+prometheus_grafana_user: admin
+prometheus_grafana_password: admin
+prometheus_grafana_org: Main Org.
+
+prometheus_version: 2.53.1

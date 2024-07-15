@@ -51,7 +51,7 @@ vlan_guest:
 # 100 - 199: Bare metal hosts end in a zero, virtualized are 1-9
 # 200 - 254: DHCP
 
-# ip_grafana: "{{ vlan_management.ip }}.2"
+ip_grafana: "{{ vlan_management.ip }}.2"
 ip_uptime: "{{ vlan_management.ip }}.3"
 ip_prometheus: "{{ vlan_management.ip }}.20"
 # ip_alert_management: "{{ vlan_management.ip }}.21"
@@ -81,3 +81,5 @@ uptime_admin_password: "{{ vault_uptime_admin_password }}"
 uptime_discord: "{{ vault_uptime_discord }}"
 
 cloudflare_certbot_api_token: "{{ vault_cloudflare_certbot_api_token }}"
+
+grafana_admin_password: "{{ vault_grafana_admin_password }}"

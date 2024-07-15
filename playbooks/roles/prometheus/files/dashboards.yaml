@@ -1,0 +1,15 @@
+---
+apiVersion: 1
+
+providers:
+  - name: "Ansible managed dashboards"
+    orgId: 1
+    folder: ""
+    folderUid: ""
+    type: file
+    disableDetetion: false
+    updateIntervalSeconds: 60
+    allowUiUpdates: false
+    options:
+      path: /etc/grafana/dashboards
+      foldersFromFileStructure: true
