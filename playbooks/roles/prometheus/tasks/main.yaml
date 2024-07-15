@@ -51,6 +51,7 @@
 - name: Create prometheus docker
   community.docker.docker_container:
     image: prom/prometheus:v{{ prometheus_version }}
+    image_name_mismatch: recreate
     name: prometheus
     command: >-
       --config.file=/etc/prometheus/prometheus.yaml
@@ -75,6 +76,7 @@
 - name: Create grafana docker
   community.docker.docker_container:
     image: grafana/grafana-oss:9.5.0
+    image_name_mismatch: recreate
     name: grafana
     command: >-
       --config=/etc/grafana/grafana.ini

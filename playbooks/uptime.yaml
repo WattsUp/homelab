@@ -19,6 +19,10 @@
           url: "https://nibbler.{{ domain_lan }}"
         - name: pfsense.nibbler GUI
           url: "https://pfsense.{{ domain_lan }}"
+        - name: prometheus GUI
+          url: "https://prometheus.{{ domain_lan }}"
+        - name: grafana GUI
+          url: "https://grafana.{{ domain_lan }}"
       uptime_monitors_ping:
         - name: DNS Primary Ping
           ip: "{{ ip_dns_0 }}"
@@ -39,6 +43,10 @@
           ip: "{{ hostvars['scruffy'].ip_management }}"
         - name: ntp Ping
           ip: "{{ ip_ntp_server }}"
+        - name: prometheus Ping
+          ip: "{{ ip_prometheus }}"
+        - name: grafana Ping
+          ip: "{{ ip_grafana }}"
       uptime_monitors_dns:
         - name: DNS Primary DNS
           ip: "{{ ip_dns_0 }}"
