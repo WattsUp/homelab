@@ -13,3 +13,7 @@
   import_playbook: playbooks/certs.yaml
 - name: Reverse proxy
   import_playbook: playbooks/reverse_proxy.yaml
+- name: Metrics
+  import_playbook: playbooks/metrics.yaml
+- name: Uptime monitor
+  import_playbook: playbooks/uptime.yaml

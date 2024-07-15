@@ -20,6 +20,7 @@
   community.docker.docker_container:
     name: pihole
     image: cbcrowe/pihole-unbound:2024.03.2
+    image_name_mismatch: recreate
     hostname: "{{ pihole_hostname }}"
     domainname: "{{ pihole_domain }}"
     networks:
