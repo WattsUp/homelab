@@ -46,7 +46,7 @@
     ]
   },
   "description": "Prometheus metrics",
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "gnetId": 3662,
   "graphTooltip": 0,
