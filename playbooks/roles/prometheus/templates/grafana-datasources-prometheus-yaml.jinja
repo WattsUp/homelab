@@ -1,0 +1,19 @@
+# {{ ansible_managed }}
+# Grafana prometheus datasource
+
+apiVersion: 1
+
+deleteDatasources:
+  - name: Prometheus
+    orgId: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: "prometheus"
+    access: proxy
+    url: http://{{ prometheus_ip }}:9090
+    jsonData:
+      httpMethod: POST
+      prometheusType: Prometheus
+      prometheusVersion: {{ prometheus_version }}

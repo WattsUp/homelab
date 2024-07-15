@@ -35,3 +35,9 @@
         - name: uptime
           ip: "{{ ip_uptime }}"
           port: 3001
+        - name: prometheus
+          ip: "{{ ip_prometheus }}"
+          port: 9090
+        - name: grafana
+          ip: "{{ ip_grafana }}"
+          port: 3000
