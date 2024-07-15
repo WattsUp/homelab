@@ -10,7 +10,7 @@
   become: true
   community.docker.docker_container:
     name: uptime-kuma
-    image: louislam/uptime-kuma:latest
+    image: louislam/uptime-kuma:v1.23.13
     networks:
       - name: "{{ uptime_network }}"
         ipv4_address: "{{ uptime_ip }}"
