@@ -19,7 +19,7 @@
   become: true
   community.docker.docker_container:
     name: pihole
-    image: cbcrowe/pihole-unbound:latest
+    image: cbcrowe/pihole-unbound:2024.03.2
     hostname: "{{ pihole_hostname }}"
     domainname: "{{ pihole_domain }}"
     networks:

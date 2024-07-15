@@ -14,7 +14,7 @@
 - name: Install Nginx
   community.docker.docker_container:
     name: "{{ reverse_proxy_name }}"
-    image: nginx:latest
+    image: nginx:1.27.0
     networks: "{{ reverse_proxy_networks }}"
     published_ports:
       - 80/tcp
