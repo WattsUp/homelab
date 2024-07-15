@@ -8,7 +8,7 @@ providers:
     folderUid: ""
     type: file
     disableDetetion: false
-    updateIntervalSeconds: 60
+    updateIntervalSeconds: 10
     allowUiUpdates: false
     options:
       path: /etc/grafana/dashboards
