@@ -47,6 +47,10 @@
           ip: "{{ ip_prometheus }}"
         - name: grafana Ping
           ip: "{{ ip_grafana }}"
+        - name: dns0-exporter Ping
+          ip: "{{ ip_dns_exporter_0 }}"
+        - name: dns1-exporter Ping
+          ip: "{{ ip_dns_exporter_1 }}"
       uptime_monitors_dns:
         - name: DNS Primary DNS
           ip: "{{ ip_dns_0 }}"

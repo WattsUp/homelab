@@ -1,4 +1,41 @@
 ---
+- name: Create exporters
+  hosts: scruffy
+  tasks:
+    - name: Install pihole-exporter for dns0
+      become: true
+      community.docker.docker_container:
+        name: pihole-exporter0
+        image: ekofr/pihole-exporter:v0.4.0
+        image_name_mismatch: recreate
+        networks:
+          - name: "{{ 'vlan-' + vlan_management.name }}"
+            ipv4_address: "{{ ip_dns_exporter_0 }}"
+        published_ports:
+          - 9617/tcp
+        restart_policy: unless-stopped
+        state: started
+        env:
+          PIHOLE_HOSTNAME: "direct.dns0"
+          PIHOLE_PASSWORD: "{{ pihole_admin_password }}"
+          PORT: "9617"
+    - name: Install pihole-exporter for dns1
+      become: true
+      community.docker.docker_container:
+        name: pihole-exporter1
+        image: ekofr/pihole-exporter:v0.4.0
+        image_name_mismatch: recreate
+        networks:
+          - name: "{{ 'vlan-' + vlan_management.name }}"
+            ipv4_address: "{{ ip_dns_exporter_1 }}"
+        published_ports:
+          - 9617/tcp
+        restart_policy: unless-stopped
+        state: started
+        env:
+          PIHOLE_HOSTNAME: "direct.dns1"
+          PIHOLE_PASSWORD: "{{ pihole_admin_password }}"
+          PORT: "9617"
 - name: Setup prometheus
   hosts: scruffy
   roles:
@@ -11,3 +48,12 @@
       prometheus_grafana_org: "{{ domain }}"
       prometheus_grafana_user: "{{ admin }}"
       prometheus_grafana_password: "{{ grafana_admin_password }}"
+      prometheus_jobs:
+        - name: dns
+          static_configs:
+            - targets: ["{{ ip_dns_exporter_0 }}:9617"]
+              labels:
+                host: "dns0"
+            - targets: ["{{ ip_dns_exporter_1 }}:9617"]
+              labels:
+                host: "dns1"
