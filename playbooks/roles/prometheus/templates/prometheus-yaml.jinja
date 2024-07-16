@@ -13,4 +13,11 @@ scrape_configs:
   # Scrape prometheus itself
   - job_name: "prometheus"
     static_configs:
-      - targets: {{ prometheus_static_targets | to_json }}
+      - targets: ["localhost:9090"]
+{% for item in prometheus_jobs %}
+  - job_name: {{ item.name }}
+    scrape_interval: {{ item.scrape_interval | default("15s") }}
+    metrics_path: {{ item.metrics_path | default("/metrics") }}
+    static_configs:
+{{ item.static_configs | to_yaml | indent(6, true) }}
+{% endfor %}

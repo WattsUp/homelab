@@ -1,8 +1,13 @@
 ---
 # Default variables for prometheus
 
-prometheus_static_targets:
-  - "localhost:9090"
+# Scraping jobs
+prometheus_jobs: []
+# - name: job name
+#   scrape_interval: 15s (default)
+#   metrics_path: /metrics (default)
+#   static_configs:
+#     - targets: [ "192.168.1.2:8000" ]
 
 prometheus_network: default
 prometheus_ip:
