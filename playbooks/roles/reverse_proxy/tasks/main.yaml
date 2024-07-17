@@ -17,6 +17,9 @@
     image: nginx:1.27.0
     image_name_mismatch: recreate
     networks: "{{ reverse_proxy_networks }}"
+    dns_servers:
+      - "{{ ip_dns_0 }}"
+      - "{{ ip_dns_1 }}"
     published_ports:
       - 80/tcp
       - 443/tcp

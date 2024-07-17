@@ -15,6 +15,9 @@
     networks:
       - name: "{{ uptime_network }}"
         ipv4_address: "{{ uptime_ip }}"
+    dns_servers:
+      - "{{ ip_dns_0 }}"
+      - "{{ ip_dns_1 }}"
     published_ports:
       - 3001/tcp
     restart_policy: unless-stopped

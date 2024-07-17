@@ -11,12 +11,15 @@
         networks:
           - name: "{{ 'vlan-' + vlan_management.name }}"
             ipv4_address: "{{ ip_dns_exporter_0 }}"
+        dns_servers:
+          - "{{ ip_dns_0 }}"
+          - "{{ ip_dns_1 }}"
         published_ports:
           - 9617/tcp
         restart_policy: unless-stopped
         state: started
         env:
-          PIHOLE_HOSTNAME: "direct.dns0"
+          PIHOLE_HOSTNAME: "{{ ip_dns_0 }}"
           PIHOLE_PASSWORD: "{{ pihole_admin_password }}"
           PORT: "9617"
     - name: Install pihole-exporter for dns1
@@ -28,14 +31,33 @@
         networks:
           - name: "{{ 'vlan-' + vlan_management.name }}"
             ipv4_address: "{{ ip_dns_exporter_1 }}"
+        dns_servers:
+          - "{{ ip_dns_0 }}"
+          - "{{ ip_dns_1 }}"
         published_ports:
           - 9617/tcp
         restart_policy: unless-stopped
         state: started
         env:
-          PIHOLE_HOSTNAME: "direct.dns1"
+          PIHOLE_HOSTNAME: "{{ ip_dns_1 }}"
           PIHOLE_PASSWORD: "{{ pihole_admin_password }}"
           PORT: "9617"
+    - name: Install speedtest-exporter
+      become: true
+      community.docker.docker_container:
+        name: speed-test
+        image: ghcr.io/miguelndecarvalho/speedtest-exporter:v3.5.4
+        image_name_mismatch: recreate
+        networks:
+          - name: "{{ 'vlan-' + vlan_management.name }}"
+            ipv4_address: "{{ ip_speedtest_exporter }}"
+        dns_servers:
+          - "{{ ip_dns_0 }}"
+          - "{{ ip_dns_1 }}"
+        published_ports:
+          - 9798/tcp
+        restart_policy: unless-stopped
+        state: started
 - name: Setup prometheus
   hosts: scruffy
   roles:
@@ -57,3 +79,8 @@
             - targets: ["{{ ip_dns_exporter_1 }}:9617"]
               labels:
                 host: "dns1"
+        - name: speedtest
+          scrape_interval: 10m
+          scrape_timeout: 60s
+          static_configs:
+            - targets: ["{{ ip_speedtest_exporter }}:9798"]
