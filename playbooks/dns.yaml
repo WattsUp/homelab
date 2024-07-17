@@ -26,6 +26,6 @@
         - host: direct.dns1
           ip: "{{ ip_dns_1 }}"
         - host: ntp
-          ip: "{{ ip_ntp_server }}"
+          ip: "{{ ip_ntp }}"
         - host: pfsense
           ip: "{{ hostvars['pfsense.nibbler'].ip_management }}"

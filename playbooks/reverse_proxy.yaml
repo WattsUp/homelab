@@ -50,3 +50,6 @@
         - name: speedtest
           ip: "{{ ip_speedtest_exporter }}"
           port: 9798
+        - name: ntp-exporter
+          ip: "{{ ip_ntp_exporter }}"
+          port: 9123

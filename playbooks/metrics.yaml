@@ -58,6 +58,26 @@
           - 9798/tcp
         restart_policy: unless-stopped
         state: started
+    - name: Install ntp-exporter
+      become: true
+      community.docker.docker_container:
+        name: ntp-exporter
+        image: quay.io/superq/chrony-exporter:v0.10.1
+        image_name_mismatch: recreate
+        command: >-
+          --chrony.address="{{ ip_ntp }}:323"
+          --collector.tracking
+          --no-collector.sources
+        networks:
+          - name: "{{ 'vlan-' + vlan_management.name }}"
+            ipv4_address: "{{ ip_ntp_exporter }}"
+        dns_servers:
+          - "{{ ip_dns_0 }}"
+          - "{{ ip_dns_1 }}"
+        published_ports:
+          - 9123/tcp
+        restart_policy: unless-stopped
+        state: started
 - name: Setup prometheus
   hosts: scruffy
   roles:
@@ -84,3 +104,6 @@
           scrape_timeout: 60s
           static_configs:
             - targets: ["{{ ip_speedtest_exporter }}:9798"]
+        - name: time
+          static_configs:
+            - targets: ["{{ ip_ntp_exporter }}:9123"]

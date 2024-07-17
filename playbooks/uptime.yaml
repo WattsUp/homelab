@@ -42,7 +42,7 @@
         - name: scruffy Ping
           ip: "{{ hostvars['scruffy'].ip_management }}"
         - name: ntp Ping
-          ip: "{{ ip_ntp_server }}"
+          ip: "{{ ip_ntp }}"
         - name: prometheus Ping
           ip: "{{ ip_prometheus }}"
         - name: grafana Ping
@@ -53,6 +53,8 @@
           ip: "{{ ip_dns_exporter_1 }}"
         - name: speedtest-exporter Ping
           ip: "{{ ip_speedtest_exporter }}"
+        - name: ntp-exporter Ping
+          ip: "{{ ip_ntp_exporter }}"
       uptime_monitors_dns:
         - name: DNS Primary DNS
           ip: "{{ ip_dns_0 }}"

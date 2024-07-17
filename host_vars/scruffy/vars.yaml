@@ -11,7 +11,7 @@ is_dns_primary: false
 vlans:
   - name: management
   - name: networking
-    ip: "{{ ip_ntp_server }}"
+    ip: "{{ ip_ntp }}"
 vlans_extras:
   eth-mgmt:
     match:
