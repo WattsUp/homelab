@@ -17,6 +17,7 @@ scrape_configs:
 {% for item in prometheus_jobs %}
   - job_name: {{ item.name }}
     scrape_interval: {{ item.scrape_interval | default("15s") }}
+    scrape_timeout: {{ item.scrape_timeout | default("10s") }}
     metrics_path: {{ item.metrics_path | default("/metrics") }}
     static_configs:
 {{ item.static_configs | to_yaml | indent(6, true) }}

@@ -47,3 +47,6 @@
         - name: dns1-exporter
           ip: "{{ ip_dns_exporter_1 }}"
           port: 9617
+        - name: speedtest
+          ip: "{{ ip_speedtest_exporter }}"
+          port: 9798

@@ -51,8 +51,12 @@
           ip: "{{ ip_dns_exporter_0 }}"
         - name: dns1-exporter Ping
           ip: "{{ ip_dns_exporter_1 }}"
+        - name: speedtest-exporter Ping
+          ip: "{{ ip_speedtest_exporter }}"
       uptime_monitors_dns:
         - name: DNS Primary DNS
           ip: "{{ ip_dns_0 }}"
+          hostname: "{{ domain }}"
         - name: DNS Secondary DNS
           ip: "{{ ip_dns_1 }}"
+          hostname: "{{ domain }}"
