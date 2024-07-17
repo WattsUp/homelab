@@ -11,12 +11,15 @@
         networks:
           - name: "{{ 'vlan-' + vlan_management.name }}"
             ipv4_address: "{{ ip_dns_exporter_0 }}"
+        dns_servers:
+          - "{{ ip_dns_0 }}"
+          - "{{ ip_dns_1 }}"
         published_ports:
           - 9617/tcp
         restart_policy: unless-stopped
         state: started
         env:
-          PIHOLE_HOSTNAME: "direct.dns0"
+          PIHOLE_HOSTNAME: "{{ ip_dns_0 }}"
           PIHOLE_PASSWORD: "{{ pihole_admin_password }}"
           PORT: "9617"
     - name: Install pihole-exporter for dns1
@@ -28,12 +31,15 @@
         networks:
           - name: "{{ 'vlan-' + vlan_management.name }}"
             ipv4_address: "{{ ip_dns_exporter_1 }}"
+        dns_servers:
+          - "{{ ip_dns_0 }}"
+          - "{{ ip_dns_1 }}"
         published_ports:
           - 9617/tcp
         restart_policy: unless-stopped
         state: started
         env:
-          PIHOLE_HOSTNAME: "direct.dns1"
+          PIHOLE_HOSTNAME: "{{ ip_dns_1 }}"
           PIHOLE_PASSWORD: "{{ pihole_admin_password }}"
           PORT: "9617"
 - name: Setup prometheus

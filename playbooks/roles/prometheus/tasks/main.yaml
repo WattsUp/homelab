@@ -61,6 +61,9 @@
     networks:
       - name: "{{ prometheus_network }}"
         ipv4_address: "{{ prometheus_ip }}"
+    dns_servers:
+      - "{{ ip_dns_0 }}"
+      - "{{ ip_dns_1 }}"
     published_ports:
       - 9090/tcp
     recreate: >-
@@ -83,6 +86,9 @@
     networks:
       - name: "{{ prometheus_grafana_network }}"
         ipv4_address: "{{ prometheus_grafana_ip }}"
+    dns_servers:
+      - "{{ ip_dns_0 }}"
+      - "{{ ip_dns_1 }}"
     published_ports:
       - 3000/tcp
     recreate: >-
