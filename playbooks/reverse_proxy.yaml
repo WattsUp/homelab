@@ -38,6 +38,9 @@
         - name: prometheus
           ip: "{{ ip_prometheus }}"
           port: 9090
+        - name: alertmanager
+          ip: "{{ ip_alertmanager }}"
+          port: 9093
         - name: grafana
           ip: "{{ ip_grafana }}"
           port: 3000

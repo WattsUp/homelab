@@ -13,6 +13,10 @@ prometheus_network: default
 prometheus_ip:
 prometheus_grafana_network: default
 prometheus_grafana_ip:
+prometheus_alertmanager_network: default
+prometheus_alertmanager_ip:
+
+prometheus_alertmanager_discord:
 
 prometheus_grafana_user: admin
 prometheus_grafana_password: admin

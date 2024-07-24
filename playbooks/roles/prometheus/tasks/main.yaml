@@ -22,6 +22,18 @@
     src: prometheus-yaml.jinja
     mode: "0644"
   register: prometheus_configuration
+- name: Create alertmanager rules
+  ansible.builtin.template:
+    dest: /etc/prometheus/rules/default-alert.rules.yaml
+    src: default-alert-rules-yaml.jinja
+    mode: "0644"
+  register: prometheus_alert_rules
+- name: Create alertmanager configuration
+  ansible.builtin.template:
+    dest: /etc/prometheus/alertmanager.yaml
+    src: alertmanager-yaml.jinja
+    mode: "0644"
+  register: prometheus_alertmanager_config
 - name: Create grafana configuration
   ansible.builtin.template:
     dest: /etc/grafana/grafana.ini
@@ -48,6 +60,29 @@
     group: false
 
 # Docker containers
+- name: Create alertmanager
+  community.docker.docker_container:
+    image: prom/alertmanager:v0.27.0
+    image_name_mismatch: recreate
+    name: alertmanager
+    command: >-
+      --config.file=/etc/prometheus/alertmanager.yaml
+      --storage.path=/alertmanager
+    networks:
+      - name: "{{ prometheus_alertmanager_network }}"
+        ipv4_address: "{{ prometheus_alertmanager_ip }}"
+    dns_servers:
+      - "{{ ip_dns_0 }}"
+      - "{{ ip_dns_1 }}"
+    published_ports:
+      - 9093/tcp
+    recreate: >-
+      {{ prometheus_alertmanager_config.changed }}
+    restart_policy: unless-stopped
+    state: started
+    volumes:
+      - /etc/prometheus/alertmanager.yaml:/etc/prometheus/alertmanager.yaml:ro
+      - alertmanager-data:/alertmanager
 - name: Create prometheus docker
   community.docker.docker_container:
     image: prom/prometheus:v{{ prometheus_version }}
@@ -67,7 +102,8 @@
     published_ports:
       - 9090/tcp
     recreate: >-
-      {{ prometheus_configuration.changed }}
+      {{ prometheus_configuration.changed or
+         prometheus_alert_rules.changed }}
     restart_policy: unless-stopped
     state: started
     volumes:
@@ -108,6 +144,7 @@
   ansible.builtin.stat:
     path: "{{ item }}"
   with_items:
+    - /etc/prometheus/alertmanager.yaml
     - /etc/prometheus/prometheus.yaml
   register: docker_file_mounts
 - name: Assert docker host file mounts

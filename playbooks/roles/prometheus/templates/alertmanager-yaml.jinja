@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+# Prometheus alertmanager configuration
+
+route:
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 3h
+  group_by: [jobname, instance]
+  receiver: discord-notify
+inhibit_rules:
+  - source_match:
+      severity: "error"
+    target_match:
+      severity: "warn"
+    equal: ["alertname"]
+receivers:
+  - name: discord-notify
+{% if prometheus_alertmanager_discord %}
+    discord_configs:
+    - webhook_url: "{{ prometheus_alertmanager_discord }}"
+{% endif %}

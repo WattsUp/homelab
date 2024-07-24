@@ -17,7 +17,7 @@
       become: true
       cert_manager_email: "{{ sysadmin_email }}"
       cert_manager_api_token: "{{ cloudflare_certbot_api_token }}"
-      cert_manager_discord: "{{ discord_info }}"
+      cert_manager_discord: "{{ discord }}"
       cert_manager_services:
         - domain: "*.{{ domain_lan }}"
           hosts:
