@@ -1,0 +1,35 @@
+---
+- name: Make Nginx directory
+  ansible.builtin.file:
+    path: /etc/nginx
+    state: directory
+    mode: "0755"
+- name: Generate exporter configuration
+  ansible.builtin.template:
+    src: config-yaml.jinja
+    dest: /etc/nginx/nginx-exporter.yaml
+    mode: "0644"
+  notify:
+    - Reload exporter
+- name: Install Nginx exporter
+  community.docker.docker_container:
+    name: "nginx-exporter"
+    image: quay.io/martinhelmich/prometheus-nginxlog-exporter:v1.11.0
+    image_name_mismatch: recreate
+    command: >-
+      -config-file /etc/prometheus-nginxlog-exporter.yaml
+    networks:
+      - name: "{{ nginx_exporter_network }}"
+        ipv4_address: "{{ nginx_exporter_ip }}"
+    dns_servers:
+      - "{{ ip_dns_0 }}"
+      - "{{ ip_dns_1 }}"
+    published_ports:
+      - 4040/tcp
+    restart_policy: unless-stopped
+    state: started
+    volumes:
+      - "{{ conf }}:/etc/prometheus-nginxlog-exporter.yaml"
+      - "/var/log/nginx/:/var/log/nginx/:ro"
+  vars:
+    conf: "/etc/nginx/nginx-exporter.yaml"

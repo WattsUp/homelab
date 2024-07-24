@@ -1,0 +1,3 @@
+---
+nginx_exporter_network: default
+nginx_exporter_ip:

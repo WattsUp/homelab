@@ -4,9 +4,10 @@
   roles:
     - role: reverse_proxy
       become: true
-      reverse_proxy_networks:
-        - name: "{{ 'vlan-' + vlan_networking.name }}"
-          ipv4_address: "{{ ip_reverse_proxy }}"
+      reverse_proxy_network: "{{ 'vlan-' + vlan_networking.name }}"
+      reverse_proxy_ip: "{{ ip_reverse_proxy }}"
+      reverse_proxy_exporter_network: "{{ 'vlan-' + vlan_management.name }}"
+      reverse_proxy_exporter_ip: "{{ ip_reverse_proxy_exporter }}"
       reverse_proxy_wildcard: "{{ domain_lan }}"
       reverse_proxy_conf: private
       reverse_proxy_services:
@@ -56,3 +57,13 @@
         - name: ntp-exporter
           ip: "{{ ip_ntp_exporter }}"
           port: 9123
+        - name: nginx-exporter
+          ip: "{{ ip_nginx_exporter }}"
+          port: 4040
+- name: Install nginx exporter
+  hosts: vm0.nibbler
+  roles:
+    - role: nginx_exporter
+      become: true
+      nginx_exporter_network: "{{ 'vlan-' + vlan_management.name }}"
+      nginx_exporter_ip: "{{ ip_nginx_exporter }}"
