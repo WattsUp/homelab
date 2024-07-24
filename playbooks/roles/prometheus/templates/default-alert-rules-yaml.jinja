@@ -1,0 +1,26 @@
+# {{ ansible_managed }}
+# Prometheus alert rules
+
+groups:
+  - name: default instance down rules
+    rules:
+      - alert: instance_down
+        expr: up == 0
+        for: 5s
+        labels:
+          severity: warn
+        annotation:
+{% raw %}
+          summary: "Instance {{ $labels.instance }} may be down"
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5s."
+{% endraw -%}
+      - alert: instance_down
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: error
+        annotation:
+{% raw %}
+          summary: "Instance {{ $labels.instance }} down"
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2m."
+{% endraw -%}

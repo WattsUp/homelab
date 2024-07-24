@@ -31,5 +31,4 @@ vlans_extras:
         - "{{ ip_dns_1 }}"
 
 # Vault items
-discord_info: "{{ vault_discord_info }}"
-discord_error: "{{ vault_discord_error }}"
+discord: "{{ vault_discord }}"

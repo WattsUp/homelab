@@ -45,6 +45,8 @@
           ip: "{{ ip_ntp }}"
         - name: prometheus Ping
           ip: "{{ ip_prometheus }}"
+        - name: alertmanager Ping
+          ip: "{{ ip_alertmanager }}"
         - name: grafana Ping
           ip: "{{ ip_grafana }}"
         - name: dns0-exporter Ping

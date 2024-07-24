@@ -85,6 +85,9 @@
       become: true
       prometheus_network: "{{ 'vlan-' + vlan_management.name }}"
       prometheus_ip: "{{ ip_prometheus }}"
+      prometheus_alertmanager_network: "{{ 'vlan-' + vlan_management.name }}"
+      prometheus_alertmanager_ip: "{{ ip_alertmanager }}"
+      prometheus_alertmanager_discord: "{{ alertmanager_discord }}"
       prometheus_grafana_network: "{{ 'vlan-' + vlan_management.name }}"
       prometheus_grafana_ip: "{{ ip_grafana }}"
       prometheus_grafana_org: "{{ domain }}"
