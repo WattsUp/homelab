@@ -9,6 +9,15 @@ global:
   external_labels:
       monitor: "prometheus"
 
+alerting:
+  alertmanagers:
+    - static_configs:
+      - targets:
+        - alertmanager:9093
+
+rule_files:
+  - "rules/*.rules.yaml"
+
 scrape_configs:
   # Scrape prometheus itself
   - job_name: "prometheus"
@@ -21,4 +30,12 @@ scrape_configs:
     metrics_path: {{ item.metrics_path | default("/metrics") }}
     static_configs:
 {{ item.static_configs | to_yaml | indent(6, true) }}
+{% if "params" in item %}
+    params:
+{{ item.params | to_yaml | indent(6, true) }}
+{% endif %}
+{% if "relabel_configs" in item %}
+    relabel_configs:
+{{ item.relabel_configs | to_yaml | indent(6, true) }}
+{% endif %}
 {% endfor %}
