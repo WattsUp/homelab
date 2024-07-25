@@ -19,6 +19,7 @@
   "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": 6,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -277,7 +278,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -311,7 +312,6 @@
         "y": 8
       },
       "id": 1,
-      "interval": "10m",
       "options": {
         "legend": {
           "calcs": [],
@@ -384,7 +384,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -414,7 +414,6 @@
         "y": 14
       },
       "id": 4,
-      "interval": "10m",
       "options": {
         "legend": {
           "calcs": [],
@@ -470,6 +469,7 @@
   "timepicker": {},
   "timezone": "",
   "title": "Internet Speed",
-  "version": 0,
+  "uid": "fce26d68-9fab-4857-8211-04220f962480",
+  "version": 1,
   "weekStart": ""
 }

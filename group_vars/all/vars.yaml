@@ -60,6 +60,7 @@ ip_dns_exporter_0: "{{ vlan_management.ip }}.23"
 ip_dns_exporter_1: "{{ vlan_management.ip }}.24"
 ip_speedtest_exporter: "{{ vlan_management.ip }}.25"
 ip_ntp_exporter: "{{ vlan_management.ip }}.26"
+ip_nginx_exporter: "{{ vlan_management.ip }}.27"
 
 # ip_plex: "{{ vlan_servers.ip }}.2"
 # ip_wiki: "{{ vlan_servers.ip }}.3"

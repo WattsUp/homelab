@@ -1,5 +1,6 @@
 ---
-reverse_proxy_networks:
+reverse_proxy_network: default
+reverse_proxy_ip:
 
 reverse_proxy_wildcard: "{{ ansible_domain }}"
 reverse_proxy_name: reverse-proxy
