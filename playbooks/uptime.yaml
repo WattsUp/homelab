@@ -61,6 +61,8 @@
           ip: "{{ ip_reverse_proxy }}"
         - name: nginx-exporter Ping
           ip: "{{ ip_nginx_exporter }}"
+        - name: pve-exporter Ping
+          ip: "{{ ip_pve_exporter }}"
       uptime_monitors_dns:
         - name: DNS Primary DNS
           ip: "{{ ip_dns_0 }}"

@@ -9,18 +9,17 @@ groups:
         for: 5s
         labels:
           severity: warn
-        annotation:
+        annotations:
 {% raw %}
           summary: "Instance {{ $labels.instance }} may be down"
-          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5s."
-{% endraw -%}
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5s.{% endraw -%}"
+
       - alert: instance_down
         expr: up == 0
         for: 2m
         labels:
           severity: error
-        annotation:
+        annotations:
 {% raw %}
           summary: "Instance {{ $labels.instance }} down"
-          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2m."
-{% endraw -%}
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2m.{% endraw -%}"
