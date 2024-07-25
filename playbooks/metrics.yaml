@@ -110,3 +110,6 @@
         - name: time
           static_configs:
             - targets: ["{{ ip_ntp_exporter }}:9123"]
+        - name: nginx
+          static_configs:
+            - targets: ["{{ ip_nginx_exporter }}:4040"]
