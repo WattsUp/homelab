@@ -78,6 +78,26 @@
           - 9123/tcp
         restart_policy: unless-stopped
         state: started
+    - name: Install pve-exporter
+      become: true
+      community.docker.docker_container:
+        name: pve-exporter
+        image: prompve/prometheus-pve-exporter:3.4.3
+        image_name_mismatch: recreate
+        networks:
+          - name: "{{ 'vlan-' + vlan_management.name }}"
+            ipv4_address: "{{ ip_pve_exporter }}"
+        dns_servers:
+          - "{{ ip_dns_0 }}"
+          - "{{ ip_dns_1 }}"
+        published_ports:
+          - 9221/tcp
+        restart_policy: unless-stopped
+        state: started
+        env:
+          PVE_USER: root@pam
+          PVE_TOKEN_NAME: exporter-token
+          PVE_TOKEN_VALUE: "{{ pve_token }}"
 - name: Setup prometheus
   hosts: scruffy
   roles:

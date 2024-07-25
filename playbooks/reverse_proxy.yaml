@@ -60,6 +60,9 @@
         - name: nginx-exporter
           ip: "{{ ip_nginx_exporter }}"
           port: 4040
+        - name: pve-exporter
+          ip: "{{ ip_pve_exporter }}"
+          port: 9221
 - name: Install nginx exporter
   hosts: vm0.nibbler
   roles:
