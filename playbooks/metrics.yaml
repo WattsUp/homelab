@@ -107,6 +107,31 @@
         - processes
         - interrupts
         - tcpstat
+- name: Create docker exporters
+  hosts: docker
+  tasks:
+    - name: Install cadvisor
+      become: true
+      community.docker.docker_container:
+        name: cadvisor
+        image: gcr.io/cadvisor/cadvisor:v0.49.1
+        image_name_mismatch: recreate
+        networks:
+          - name: "{{ 'vlan-' + vlan_management.name }}"
+            ipv4_address: "{{ ip_cadvisor }}"
+        dns_servers:
+          - "{{ ip_dns_0 }}"
+          - "{{ ip_dns_1 }}"
+        published_ports:
+          - 8080/tcp
+        restart_policy: unless-stopped
+        state: started
+        volumes:
+          - "/:/rootfs:ro"
+          - "/var/run:/var/run:ro"
+          - "/sys:/sys:ro"
+          - "/var/lib/docker/:/var/lib/docker:ro"
+          - "/dev/disk/:/dev/disk:ro"
 - name: Setup prometheus
   hosts: scruffy
   roles:

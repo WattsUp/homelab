@@ -2,6 +2,7 @@
 eth_services_mac: "{{ hw_mac_eth_2 }}"
 
 ip_management: "{{ vlan_management.ip }}.111"
+ip_cadvisor: "{{ vlan_management.ip }}.119"
 
 is_dns_primary: true
 
