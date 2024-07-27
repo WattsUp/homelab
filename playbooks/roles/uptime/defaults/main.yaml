@@ -21,4 +21,10 @@ uptime_monitors_dns: []
 #   hostname: google.com (default)
 #   ip: 192.168.1.2 ip of DNS server
 
+# TCP ports to monitor
+uptime_monitors_ports: []
+# - name: Google
+#   ip: 192.168.1.2
+#   port: 8080
+
 uptime_discord_webhook:
