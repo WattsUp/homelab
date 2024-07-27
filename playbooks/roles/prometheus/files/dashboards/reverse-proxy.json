@@ -680,116 +680,7 @@
           },
           "unit": "none"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "__name__"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Time"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "instance"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "job"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "service"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "method"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Method"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "server"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Server"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "status"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Status"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Value"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Count"
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 7,
@@ -829,7 +720,28 @@
         }
       ],
       "title": "Top responses",
-      "transformations": [],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "instance": true,
+              "job": true,
+              "service": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value": "Count",
+              "job": "",
+              "method": "Method",
+              "server": "Server",
+              "service": "",
+              "status": "Status"
+            }
+          }
+        }
+      ],
       "type": "table"
     },
     {
@@ -869,109 +781,9 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "__name__"
+              "options": "Duration"
             },
             "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Time"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "instance"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "job"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "service"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "method"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Method"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "server"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Server"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "status"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Status"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Value"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Duration"
-              },
               {
                 "id": "unit",
                 "value": "s"
@@ -1018,7 +830,26 @@
         }
       ],
       "title": "Slowest responses",
-      "transformations": [],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "instance": true,
+              "job": true,
+              "service": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value": "Duration",
+              "method": "Method",
+              "server": "Server",
+              "status": "Status"
+            }
+          }
+        }
+      ],
       "type": "table"
     }
   ],
@@ -1064,6 +895,6 @@
   "timezone": "",
   "title": "Reverse Proxy",
   "uid": "c6fa3e26-ec53-4b27-a311-24dd2d98dd22",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }

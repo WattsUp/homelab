@@ -94,3 +94,15 @@
     notification_names:
       - discord
   loop: "{{ uptime_monitors_dns }}"
+- name: Add port monitors
+  lucasheld.uptime_kuma.monitor:
+    api_url: "{{ uptime_url }}"
+    api_token: "{{ uptime_token }}"
+    name: "{{ item.name }}"
+    type: port
+    hostname: "{{ item.ip }}"
+    port: "{{ item.port }}"
+    state: present
+    notification_names:
+      - discord
+  loop: "{{ uptime_monitors_port }}"

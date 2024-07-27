@@ -25,7 +25,7 @@
     ]
   },
   "description": "Proxmox Virtual Environment Dashboard",
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "gnetId": 10347,
   "graphTooltip": 0,

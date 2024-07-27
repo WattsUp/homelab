@@ -98,6 +98,15 @@
           PVE_USER: root@pam
           PVE_TOKEN_NAME: exporter-token
           PVE_TOKEN_VALUE: "{{ pve_token }}"
+- name: Create node exporters
+  hosts: nodes
+  roles:
+    - role: prometheus.prometheus.node_exporter
+      node_exporter_web_listen_address: "{{ ip_management }}:9100"
+      node_exporter_enabled_collectors:
+        - processes
+        - interrupts
+        - tcpstat
 - name: Setup prometheus
   hosts: scruffy
   roles:

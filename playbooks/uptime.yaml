@@ -70,3 +70,13 @@
         - name: DNS Secondary DNS
           ip: "{{ ip_dns_1 }}"
           hostname: "{{ domain }}"
+      uptime_monitors_port:
+        - name: scruffy node-exporter
+          ip: "{{ hostvars['scruffy'].ip_management }}"
+          port: 9100
+        - name: nibbler node-exporter
+          ip: "{{ hostvars['nibbler'].ip_management }}"
+          port: 9100
+        - name: vm0.nibbler node-exporter
+          ip: "{{ hostvars['vm0.nibbler'].ip_management }}"
+          port: 9100
