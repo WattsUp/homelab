@@ -27,6 +27,11 @@ eth_netplan:
 eth_ifupdown:
   hosts:
     nibbler:
+nodes:
+  hosts:
+    scruffy:
+    nibbler:
+    vm0.nibbler:
 docker:
   hosts:
     scruffy:
