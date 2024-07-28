@@ -1,0 +1,66 @@
+---
+- name: Make directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - /etc/node_exporter
+    - /etc/node_exporter/scrapers
+    - /etc/node_exporter/wrappers
+    - /var/lib/node_exporter
+- name: Install tools
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  when: node_exporter_baremetal
+  loop:
+    - smartmontools
+    - moreutils
+- name: Copy textfile exporters
+  ansible.posix.synchronize:
+    dest: /etc/node_exporter/scrapers
+    src: files/
+    owner: false
+    group: false
+  when: node_exporter_baremetal
+- name: Create scraper wrapper
+  ansible.builtin.template:
+    dest: "{{ path }}/{{ item | basename }}"
+    src: scraper-wrapper-sh.jinja
+    mode: "0755"
+  when: node_exporter_baremetal
+  with_fileglob: "/etc/node_exporter/scrapers/*.sh"
+  vars:
+    path: /etc/node_exporter/wrappers
+  notify:
+    - Reload systemd
+- name: Create scraper services
+  ansible.builtin.template:
+    dest: "{{ path }}.{{ item | basename }}.service"
+    src: scraper-service.jinja
+    mode: "0644"
+  when: node_exporter_baremetal
+  with_fileglob: "/etc/node_exporter/wrappers/*.sh"
+  vars:
+    path: /lib/systemd/system/node-exporter-scraper
+  notify:
+    - Reload systemd
+- name: Start scrapers
+  ansible.builtin.service:
+    name: "node-exporter-scraper.{{ item | basename }}.service"
+    state: started
+    enabled: true
+  when: node_exporter_baremetal
+  with_fileglob: "/etc/node_exporter/scrapers/*.sh"
+- name: Install node-exporter
+  ansible.builtin.import_role:
+    name: prometheus.prometheus.node_exporter
+  vars:
+    node_exporter_web_listen_address: "{{ node_exporter_ip }}:9100"
+    node_exporter_enabled_collectors:
+      - processes
+      - interrupts
+      - tcpstat
+      - textfile:
+          directory: /var/lib/node_exporter

@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+[Unit]
+Description=node-exporter {{ item | basename }} scraper
+StartLimitBurst=5
+StartLimitIntervalSec=10
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart={{ item }}
+
+[Install]
+WantedBy=multi-user.target

@@ -5,6 +5,7 @@ ip_management: "{{ vlan_management.ip }}.111"
 ip_cadvisor: "{{ vlan_management.ip }}.119"
 
 is_dns_primary: true
+is_baremetal: false
 
 vlans:
   - name: management

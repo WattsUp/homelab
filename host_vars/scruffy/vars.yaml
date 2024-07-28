@@ -8,6 +8,7 @@ ip_cadvisor: "{{ vlan_management.ip }}.109"
 eth_services_mac: "{{ vault_hw_mac_eth_1 }}"
 
 is_dns_primary: false
+is_baremetal: true
 
 vlans:
   - name: management
