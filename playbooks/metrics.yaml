@@ -101,12 +101,10 @@
 - name: Create node exporters
   hosts: nodes
   roles:
-    - role: prometheus.prometheus.node_exporter
-      node_exporter_web_listen_address: "{{ ip_management }}:9100"
-      node_exporter_enabled_collectors:
-        - processes
-        - interrupts
-        - tcpstat
+    - role: node_exporter
+      become: true
+      node_exporter_ip: "{{ ip_management }}"
+      node_exporter_baremetal: "{{ is_baremetal }}"
 - name: Create docker exporters
   hosts: docker
   tasks:
