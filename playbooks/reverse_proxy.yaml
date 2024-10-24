@@ -63,6 +63,8 @@
         - name: pve-exporter
           ip: "{{ ip_pve_exporter }}"
           port: 9221
+        - name: beehive
+          ip: "{{ ip_beehive }}"
 - name: Install nginx exporter
   hosts: vm0.nibbler
   roles:

@@ -75,7 +75,7 @@ ip_reverse_proxy: "{{ vlan_networking.ip }}.5"
 # ip_ddns: "{{ vlan_networking.ip }}.20"
 
 # ip_greenhouse: "{{ vlan_iot.ip }}.20"
-# ip_beehive: "{{ vlan_iot.ip }}.21"
+ip_beehive: "{{ vlan_iot.ip }}.21"
 
 # Vault items
 sysadmin_email: "{{ vault_sysadmin_email }}"
