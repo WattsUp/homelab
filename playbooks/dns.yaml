@@ -29,3 +29,21 @@
           ip: "{{ ip_ntp }}"
         - host: pfsense
           ip: "{{ hostvars['pfsense.nibbler'].ip_management }}"
+- name: Install dynamic DNS
+  hosts: scruffy
+  tasks:
+    - name: Install cloudflare-ddns
+      become: true
+      community.docker.docker_container:
+        name: ddns
+        image: oznu/cloudflare-ddns:latest
+        networks:
+          - name: "{{ 'vlan-' + vlan_networking.name }}"
+            ipv4_address: "{{ ip_ddns }}"
+        restart_policy: unless-stopped
+        state: started
+        env:
+          ZONE: "{{ domain }}"
+          API_KEY: "{{ cloudflare_ddns_api_token }}"
+          SUBDOMAIN: site01
+          PROXIED: "false"
