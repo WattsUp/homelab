@@ -3,6 +3,8 @@
   ansible.builtin.pip:
     name: "git+https://github.com/WattsUp/nummus.git#egg=nummus[encrypt]"
     virtualenv: "/home/{{ admin }}/venv-nummus"
+  notify:
+    - Restart nummus
 - name: Create nummus folder
   ansible.builtin.file:
     path: "/home/{{ admin }}/.nummus"
@@ -38,3 +40,4 @@
     mode: "0644"
   notify:
     - Reload systemd
+    - Restart nummus

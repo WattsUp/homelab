@@ -181,3 +181,8 @@
             - targets: ["{{ ip_beehive }}"]
               labels:
                 host: "beehive"
+        - name: nummus
+          scheme: https
+          insecure: true
+          static_configs:
+            - targets: ["{{ ip_nummus }}:8080"]
