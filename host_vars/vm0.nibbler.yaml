@@ -12,5 +12,6 @@ vlans:
     ip: "{{ ip_management }}"
     default_route: true
   - name: servers
+    ip: "{{ ip_nummus }}"
   - name: networking
 vlan_hw_offload: false

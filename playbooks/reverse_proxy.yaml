@@ -65,6 +65,10 @@
           port: 9221
         - name: beehive
           ip: "{{ ip_beehive }}"
+        - name: nummus
+          ip: "{{ ip_nummus }}"
+          scheme: https
+          port: 8080
 - name: Install nginx exporter
   hosts: vm0.nibbler
   roles:

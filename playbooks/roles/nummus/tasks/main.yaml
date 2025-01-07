@@ -1,0 +1,40 @@
+---
+- name: Install nummus
+  ansible.builtin.pip:
+    name: "git+https://github.com/WattsUp/nummus.git#egg=nummus[encrypt]"
+    virtualenv: "/home/{{ admin }}/venv-nummus"
+- name: Create nummus folder
+  ansible.builtin.file:
+    path: "/home/{{ admin }}/.nummus"
+    state: directory
+    owner: "{{ admin }}"
+    group: "{{ admin }}"
+    mode: "0755"
+- name: Create portfolio importers folder
+  ansible.builtin.file:
+    path: "/home/{{ admin }}/.nummus/portfolio.importers"
+    state: directory
+    owner: "{{ admin }}"
+    group: "{{ admin }}"
+    mode: "0755"
+- name: Clone nummus-importers locally
+  delegate_to: localhost
+  ansible.builtin.git:
+    repo: "git@github.com:WattsUp/nummus-importers.git"
+    dest: "/home/{{ admin }}/Code/nummus-importers"
+    version: master
+- name: Copy nummus-importers
+  ansible.builtin.copy:
+    src: "/home/{{ admin }}/Code/nummus-importers/importers/"
+    dest: "/home/{{ admin }}/.nummus/portfolio.importers/"
+    owner: "{{ admin }}"
+    group: "{{ admin }}"
+    mode: "0755"
+- name: Create nummus service
+  become: true
+  ansible.builtin.template:
+    dest: /lib/systemd/system/nummus.service
+    src: nummus-service.jinja
+    mode: "0644"
+  notify:
+    - Reload systemd

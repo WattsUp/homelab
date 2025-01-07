@@ -1,0 +1,5 @@
+---
+- name: Install nummus
+  hosts: vm0.nibbler
+  roles:
+    - role: nummus
