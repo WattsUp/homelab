@@ -4,6 +4,7 @@
     name: "git+https://github.com/WattsUp/nummus.git#egg=nummus[encrypt]"
     virtualenv: "/home/{{ admin }}/venv-nummus"
   notify:
+    - Migrate nummus
     - Restart nummus
 - name: Create nummus folder
   ansible.builtin.file:

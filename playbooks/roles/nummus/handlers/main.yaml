@@ -3,6 +3,15 @@
   become: true
   ansible.builtin.systemd_service:
     daemon_reload: true
+- name: Migrate nummus
+  ansible.builtin.command:
+    argv:
+      - "/home/{{ admin }}/venv-nummus/bin/nummus"
+      - --pass-file
+      - "/home/{{ admin }}/.nummus.secret"
+      - migrate
+  register: migrate_result
+  changed_when: "'migrated to' in migrate_result.stdout"
 - name: Restart nummus
   become: true
   ansible.builtin.service:

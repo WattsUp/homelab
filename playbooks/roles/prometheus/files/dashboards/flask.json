@@ -160,7 +160,7 @@
           "hide": false,
           "instant": true,
           "interval": "",
-          "legendFormat": "{{method}} {{path}}",
+          "legendFormat": "{{method}} {{endpoint}}",
           "range": false,
           "refId": "A"
         }
@@ -476,7 +476,7 @@
           "expr": "flask_http_request_duration_seconds_count{job=\"$app_name\"}",
           "instant": false,
           "interval": "",
-          "legendFormat": "{{method}} {{path}}",
+          "legendFormat": "{{method}} {{endpoint}}",
           "range": true,
           "refId": "A"
         }
@@ -574,7 +574,7 @@
           "exemplar": true,
           "expr": "rate(flask_http_request_duration_seconds_count{job=\"${app_name}\"}[1m])",
           "interval": "",
-          "legendFormat": "{{path}}",
+          "legendFormat": "{{endpoint}}",
           "range": true,
           "refId": "A"
         }
@@ -670,7 +670,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(flask_http_request_total{job=\"$app_name\", status=~\"2.*\"}) by(path, method) / sum(flask_http_request_total{job=\"$app_name\"}) by(path, method)",
+          "expr": "sum(flask_http_request_total{job=\"$app_name\", status=~\"2.*\"}) by(endpoint, method) / sum(flask_http_request_total{job=\"$app_name\"}) by(endpoint, method)",
           "hide": false,
           "interval": "",
           "legendFormat": "{{method}} {{endpoint}} ",
@@ -770,7 +770,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(flask_http_request_total{job=\"$app_name\", status=~\"5.*\"}) by(path, method) / sum(flask_http_request_total{job=\"$app_name\"}) by(path, method)",
+          "expr": "sum(flask_http_request_total{job=\"$app_name\", status=~\"5.*\"}) by(endpoint, method) / sum(flask_http_request_total{job=\"$app_name\"}) by(endpoint, method)",
           "hide": false,
           "interval": "",
           "legendFormat": "{{method}} {{endpoint}} ",
@@ -871,7 +871,7 @@
           "expr": "flask_http_request_duration_seconds_sum{job=\"$app_name\"} / flask_http_request_duration_seconds_count{job=\"$app_name\"}",
           "hide": false,
           "interval": "",
-          "legendFormat": "{{path}}",
+          "legendFormat": "{{endpoint}}",
           "range": true,
           "refId": "A"
         }
@@ -948,7 +948,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "histogram_quantile(0.5,sum(rate(flask_http_request_duration_seconds_bucket{job=\"$app_name\"}[$__range])) by (path, le)) >= 0",
+          "expr": "histogram_quantile(0.5,sum(rate(flask_http_request_duration_seconds_bucket{job=\"$app_name\"}[$__range])) by (endpoint, le)) >= 0",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -962,7 +962,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "histogram_quantile(0.9,sum(rate(flask_http_request_duration_seconds_bucket{job=\"$app_name\"}[$__range])) by (path, le)) >= 0",
+          "expr": "histogram_quantile(0.9,sum(rate(flask_http_request_duration_seconds_bucket{job=\"$app_name\"}[$__range])) by (endpoint, le)) >= 0",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -977,7 +977,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "histogram_quantile(0.99,sum(rate(flask_http_request_duration_seconds_bucket{job=\"$app_name\"}[$__range])) by (path, le)) >= 0",
+          "expr": "histogram_quantile(0.99,sum(rate(flask_http_request_duration_seconds_bucket{job=\"$app_name\"}[$__range])) by (endpoint, le)) >= 0",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -991,7 +991,7 @@
         {
           "id": "seriesToColumns",
           "options": {
-            "byField": "path",
+            "byField": "endpoint",
             "mode": "outer"
           }
         },
@@ -1029,7 +1029,7 @@
               "Value #PR 90": "PR 90",
               "Value #PR 99": "PR 99",
               "method 1": "Method",
-              "path 1": "Path"
+              "endpoint 1": "Endpoint"
             }
           }
         },
