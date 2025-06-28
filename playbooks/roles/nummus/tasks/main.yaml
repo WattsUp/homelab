@@ -6,20 +6,17 @@
   notify:
     - Migrate nummus
     - Restart nummus
-- name: Create nummus folder
+- name: Create directories
   ansible.builtin.file:
-    path: "/home/{{ admin }}/.nummus"
+    path: "{{ item }}"
     state: directory
     owner: "{{ admin }}"
     group: "{{ admin }}"
     mode: "0755"
-- name: Create portfolio importers folder
-  ansible.builtin.file:
-    path: "/home/{{ admin }}/.nummus/portfolio.importers"
-    state: directory
-    owner: "{{ admin }}"
-    group: "{{ admin }}"
-    mode: "0755"
+  with_items:
+    - "/home/{{ admin }}/.nummus"
+    - "/home/{{ admin }}/.nummus/portfolio.importers"
+    - /tmp/nummus
 - name: Clone nummus-importers locally
   delegate_to: localhost
   ansible.builtin.git:

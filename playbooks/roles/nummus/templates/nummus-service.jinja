@@ -9,7 +9,9 @@ Type=simple
 Restart=always
 RestartSec=1
 User={{ admin }}
-ExecStart=/home/{{ admin }}/venv-nummus/bin/nummus --pass-file /home/{{ admin }}/.nummus.secret web --host {{ ip_nummus }} --no-debug
+Environment="PROMETHEUS_MULTIPROC_DIR=/tmp/nummus"
+ExecStartPre=-/bin/bash -c "rm /tmp/nummus/*"
+ExecStart=/home/{{ admin }}/venv-nummus/bin/nummus --pass-file /home/{{ admin }}/.nummus.secret web --host {{ ip_nummus }} --production
 
 [Install]
 WantedBy=multi-user.target

@@ -64,9 +64,7 @@
         name: ntp-exporter
         image: quay.io/superq/chrony-exporter:v0.10.1
         image_name_mismatch: recreate
-        command: >-
-          --chrony.address="{{ ip_ntp }}:323"
-          --collector.tracking
+        command: --chrony.address="{{ ip_ntp }}:323" --collector.tracking
           --no-collector.sources
         networks:
           - name: "{{ 'vlan-' + vlan_management.name }}"
@@ -137,7 +135,8 @@
       become: true
       prometheus_network: "{{ 'vlan-' + vlan_management.name }}"
       prometheus_ip: "{{ ip_prometheus }}"
-      prometheus_alertmanager_network: "{{ 'vlan-' + vlan_management.name }}"
+      prometheus_alertmanager_network: "{{ 'vlan-' + vlan_management.name
+        }}"
       prometheus_alertmanager_ip: "{{ ip_alertmanager }}"
       prometheus_alertmanager_discord: "{{ alertmanager_discord }}"
       prometheus_grafana_network: "{{ 'vlan-' + vlan_management.name }}"
@@ -182,7 +181,5 @@
               labels:
                 host: "beehive"
         - name: nummus
-          scheme: https
-          insecure: true
           static_configs:
-            - targets: ["{{ ip_nummus }}:8080"]
+            - targets: ["{{ ip_nummus }}:8081"]

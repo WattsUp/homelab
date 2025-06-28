@@ -6,7 +6,8 @@
       become: true
       reverse_proxy_network: "{{ 'vlan-' + vlan_networking.name }}"
       reverse_proxy_ip: "{{ ip_reverse_proxy }}"
-      reverse_proxy_exporter_network: "{{ 'vlan-' + vlan_management.name }}"
+      reverse_proxy_exporter_network: "{{ 'vlan-' + vlan_management.name
+        }}"
       reverse_proxy_exporter_ip: "{{ ip_reverse_proxy_exporter }}"
       reverse_proxy_wildcard: "{{ domain_lan }}"
       reverse_proxy_conf: private
@@ -67,7 +68,6 @@
           ip: "{{ ip_beehive }}"
         - name: nummus
           ip: "{{ ip_nummus }}"
-          scheme: https
           port: 8080
 - name: Install nginx exporter
   hosts: vm0.nibbler
