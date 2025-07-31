@@ -1,20 +1,17 @@
 ---
-- name: Reload systemd
-  become: true
-  ansible.builtin.systemd_service:
-    daemon_reload: true
 - name: Migrate nummus
-  ansible.builtin.command:
-    argv:
-      - "/home/{{ admin }}/venv-nummus/bin/nummus"
-      - --pass-file
-      - "/home/{{ admin }}/.nummus.secret"
-      - migrate
+  community.docker.docker_container_exec:
+    container: nummus
+    command: nummus migrate
   register: migrate_result
   changed_when: "'migrated to' in migrate_result.stdout"
+  notify:
+    - Restart nummus
 - name: Restart nummus
-  become: true
-  ansible.builtin.service:
-    name: nummus.service
-    enabled: true
-    state: restarted
+  community.docker.docker_container:
+    name: nummus
+    image: wattsup314/nummus-financial
+    state: started
+    restart: true
+    comparisons:
+      "*": ignore

@@ -182,4 +182,4 @@
                 host: "beehive"
         - name: nummus
           static_configs:
-            - targets: ["{{ ip_nummus }}:8081"]
+            - targets: ["{{ ip_nummus }}:8001"]

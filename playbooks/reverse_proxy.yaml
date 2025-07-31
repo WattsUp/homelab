@@ -68,7 +68,7 @@
           ip: "{{ ip_beehive }}"
         - name: nummus
           ip: "{{ ip_nummus }}"
-          port: 8080
+          port: 8000
 - name: Install nginx exporter
   hosts: vm0.nibbler
   roles:

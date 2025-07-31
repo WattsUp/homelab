@@ -1,0 +1,5 @@
+---
+# Default variables for nummus
+
+nummus_network: default
+nummus_ip:

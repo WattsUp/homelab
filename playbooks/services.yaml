@@ -3,3 +3,5 @@
   hosts: vm0.nibbler
   roles:
     - role: nummus
+      nummus_network: "{{ 'vlan-' + vlan_servers.name }}"
+      nummus_ip: "{{ ip_nummus }}"
