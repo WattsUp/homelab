@@ -23,6 +23,8 @@
           url: "https://prometheus.{{ domain_lan }}"
         - name: grafana GUI
           url: "https://grafana.{{ domain_lan }}"
+        - name: nummus GUI
+          url: "https://nummus.{{ domain_lan }}/login"
       uptime_monitors_ping:
         - name: DNS Primary Ping
           ip: "{{ ip_dns_0 }}"
@@ -65,6 +67,8 @@
           ip: "{{ ip_pve_exporter }}"
         - name: beehive Ping
           ip: "{{ ip_beehive }}"
+        - name: nummus Ping
+          ip: "{{ ip_nummus }}"
       uptime_monitors_dns:
         - name: DNS Primary DNS
           ip: "{{ ip_dns_0 }}"

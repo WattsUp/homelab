@@ -65,6 +65,7 @@ ip_pve_exporter: "{{ vlan_management.ip }}.28"
 
 # ip_plex: "{{ vlan_servers.ip }}.2"
 # ip_wiki: "{{ vlan_servers.ip }}.3"
+ip_nummus: "{{ vlan_servers.ip }}.4"
 # ip_wiki_db: "{{ vlan_servers.ip }}.20"
 
 ip_dns_0: "{{ vlan_networking.ip }}.2"

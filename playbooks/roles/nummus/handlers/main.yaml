@@ -1,0 +1,17 @@
+---
+- name: Migrate nummus
+  community.docker.docker_container_exec:
+    container: nummus
+    command: nummus migrate
+  register: migrate_result
+  changed_when: "'migrated to' in migrate_result.stdout"
+  notify:
+    - Restart nummus
+- name: Restart nummus
+  community.docker.docker_container:
+    name: nummus
+    image: wattsup314/nummus-financial
+    state: started
+    restart: true
+    comparisons:
+      "*": ignore

@@ -1,0 +1,47 @@
+---
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ admin }}"
+    group: "{{ admin }}"
+    mode: "0755"
+  with_items:
+    - /etc/nummus
+    - /etc/nummus/portfolio.importers
+- name: Clone nummus-importers locally
+  delegate_to: localhost
+  ansible.builtin.git:
+    repo: "git@github.com:WattsUp/nummus-importers.git"
+    dest: "/home/{{ admin }}/Code/nummus-importers"
+    version: master
+  notify:
+    - Restart nummus
+- name: Copy nummus-importers
+  ansible.builtin.copy:
+    src: "/home/{{ admin }}/Code/nummus-importers/importers/"
+    dest: /etc/nummus/portfolio.importers/
+    owner: "{{ admin }}"
+    group: "{{ admin }}"
+    mode: "0755"
+- name: Install nummus
+  community.docker.docker_container:
+    name: nummus
+    image: wattsup314/nummus-financial:latest
+    image_name_mismatch: recreate
+    pull: always
+    networks:
+      - name: "{{ nummus_network }}"
+        ipv4_address: "{{ nummus_ip }}"
+    dns_servers:
+      - "{{ ip_dns_0 }}"
+      - "{{ ip_dns_1 }}"
+    published_ports:
+      - 8000/tcp
+      - 8001/tcp
+    restart_policy: unless-stopped
+    state: started
+    volumes:
+      - /etc/nummus:/data
+  notify:
+    - Migrate nummus
