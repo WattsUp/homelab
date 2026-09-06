@@ -22,7 +22,6 @@
     image: cbcrowe/pihole-unbound:2024.03.2
     image_name_mismatch: recreate
     hostname: "{{ pihole_hostname }}"
-    domainname: "{{ pihole_domain }}"
     networks:
       - name: "{{ pihole_network }}"
         ipv4_address: "{{ pihole_ip }}"

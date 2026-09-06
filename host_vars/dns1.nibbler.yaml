@@ -1,0 +1,23 @@
+---
+ansible_user: "root"
+eth_management_mac: "4E:A4:27:10:30:98"
+eth_services_mac: "B6:E8:56:EF:D5:41"
+ip_management: "{{ vlan_management.ip }}.112"
+is_dns_primary: false
+is_baremetal: false
+docker_services_network: services
+vlans:
+  - name: management
+  - name: networking
+vlans_extras:
+  eth-mgmt:
+    match:
+      macaddress: "{{ eth_management_mac }}"
+      name: e*
+    set-name: eth-mgmt
+    addresses:
+      - "{{ ip_management }}/24"
+    routes:
+      - to: default
+        via: "{{ vlan_management.ip }}.1"
+vlan_hw_offload: false

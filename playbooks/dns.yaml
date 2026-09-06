@@ -1,7 +1,6 @@
 ---
-# vm0.nibbler needs hostnames to bare metal in order to SSH to them.
-- name: Generate /etc/hosts file on vm0.nibbler
-  hosts: vm0.nibbler
+- name: Generate /etc/hosts file on farnsworth
+  hosts: farnsworth
   roles:
     - role: etc_hosts
       etc_hosts_list: "{{ groups['etc_hosts'] }}"
@@ -30,7 +29,7 @@
         - host: pfsense
           ip: "{{ hostvars['pfsense.nibbler'].ip_management }}"
 - name: Install dynamic DNS
-  hosts: vm0.nibbler
+  hosts: docker0.nibbler
   tasks:
     - name: Install cloudflare-ddns
       become: true
@@ -38,8 +37,9 @@
         name: ddns
         image: oznu/cloudflare-ddns:latest
         networks:
-          - name: "{{ 'vlan-' + vlan_networking.name }}"
-            ipv4_address: "{{ ip_ddns }}"
+          - name: "{{ docker_services_network }}"
+        comparisons:
+          networks: strict
         restart_policy: unless-stopped
         state: started
         env:

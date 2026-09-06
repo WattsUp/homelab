@@ -1,4 +1,15 @@
 ---
+- name: Install Docker Python dependencies
+  hosts: docker
+  tasks:
+    - name: Install Docker Python dependencies
+      become: true
+      ansible.builtin.apt:
+        name:
+          - python3-docker
+          - python3-requests
+        state: present
+        update_cache: true
 - name: Install docker
   hosts: docker
   roles:
@@ -9,21 +20,61 @@
 - name: Setup docker networking
   hosts: docker
   tasks:
-    - name: Prune unused networks
-      become: true
-      community.docker.docker_prune:
-        networks: true
-    - name: Configure docker networking
+    # The service roles converge onto this network.  It intentionally has no
+    # VLAN parent: published ports use host-owned VLAN addresses instead.
+    - name: Create shared services bridge network
       become: true
       community.docker.docker_network:
-        name: "{{ 'vlan-' + item.name }}"
+        name: "{{ docker_services_network }}"
+        driver: bridge
+        internal: false
+        state: present
+    - name: Create Uptime Kuma proxy bridge network
+      become: true
+      community.docker.docker_network:
+        name: "{{ docker_uptime_network }}"
+        driver: bridge
+        internal: false
+        state: present
+      when: runs_uptime_kuma | default(false) | bool
+    # DNS remains directly attached to the networking VLAN.  It is a network
+    # appliance, so its stable address must not be a host-published bridge
+    # port.
+    - name: Create dedicated Pi-hole ipvlan network
+      become: true
+      community.docker.docker_network:
+        name: "{{ 'vlan-' + vlan_networking.name }}"
         driver: ipvlan
-        ipam_config:
-          - subnet: "{{ vlan_dict.ip }}.0/24"
-            gateway: "{{ vlan_dict.ip }}.1"
         driver_options:
-          parent: "eth-serv.{{ vlan_dict.id }}"
-      vars:
-        vlan_name: "{{ 'vlan_' + item.name }}"
-        vlan_dict: "{{ lookup('ansible.builtin.vars', vlan_name) }}"
-      loop: "{{ vlans }}"
+          parent: "eth-serv.{{ vlan_networking.id }}"
+        ipam_config:
+          - subnet: "{{ vlan_networking.ip }}.0/24"
+            gateway: "{{ vlan_networking.ip }}.1"
+        state: present
+    # The Pi-hole exporter must reach DNS0 from a separate network namespace;
+    # ipvlan host isolation prevents a bridge container from doing that.
+    - name: Create Pi-hole exporter ipvlan network
+      become: true
+      community.docker.docker_network:
+        name: "{{ 'vlan-' + vlan_management.name }}"
+        driver: ipvlan
+        driver_options:
+          parent: "eth-serv.{{ vlan_management.id }}"
+        ipam_config:
+          - subnet: "{{ vlan_management.ip }}.0/24"
+            gateway: "{{ vlan_management.ip }}.1"
+        state: present
+    # The reverse proxy reaches Home Assistant directly from this VLAN while
+    # its public HTTP(S) ports remain bound only to the host ingress address.
+    - name: Create reverse proxy automation ipvlan network
+      become: true
+      community.docker.docker_network:
+        name: "{{ 'vlan-' + vlan_automation.name }}"
+        driver: ipvlan
+        driver_options:
+          parent: "eth-serv.{{ vlan_automation.id }}"
+        ipam_config:
+          - subnet: "{{ vlan_automation.ip }}.0/24"
+            gateway: "{{ vlan_automation.ip }}.1"
+        state: present
+      when: runs_reverse_proxy | default(false) | bool

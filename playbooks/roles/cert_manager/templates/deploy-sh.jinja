@@ -14,7 +14,7 @@ then
     echo "Deploying {{ item.domain }} to {{ host_item.host }}"
 
     {% if host_item.host == inventory_hostname %}
-    # NOTE: The certificate manager cannot SSH to itself on vm0.nibbler.
+    # NOTE: The certificate manager cannot SSH to itself on docker0.nibbler.
     touch {{ host_item.dest_cert }}
     chmod 0640 {{ host_item.dest_cert }}
     cat "$cert_folder/fullchain.pem" > {{ host_item.dest_cert }}
@@ -24,7 +24,7 @@ then
     {% else %}
     # NOTE: A failed deployment must not keep Certbot running indefinitely.
     ssh_arg="-i /root/.ssh/id_ed25519 -o BatchMode=yes -o ConnectTimeout=15 -o ConnectionAttempts=1 -o StrictHostKeyChecking=accept-new"
-    ssh_host={{ host_item.user | default(ansible_user) }}@{{ host_item.host }}
+    ssh_host={{ host_item.user | default(hostvars[host_item.host].ansible_user) }}@{{ host_item.host }}
 
     # Copy to host
     {% if host_item.sudo | default(true) %}

@@ -24,9 +24,9 @@
   ansible.builtin.set_fact:
     netgear_wax620_basic_settings_current:
       apName: >-
-        {{ (netgear_wax620_basic_settings_response.content | from_json) .system.basicSettings.apName }}
+        {{ (netgear_wax620_basic_settings_response.content | from_json).system.basicSettings.apName }}
       sysCountryRegion: >-
-        {{ (netgear_wax620_basic_settings_response.content | from_json) .system.basicSettings.sysCountryRegion }}
+        {{ (netgear_wax620_basic_settings_response.content | from_json).system.basicSettings.sysCountryRegion }}
 - name: Set desired WAX620 basic settings
   ansible.builtin.set_fact:
     netgear_wax620_basic_settings_desired:

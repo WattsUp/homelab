@@ -1,5 +1,5 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 # {{ ansible_managed }}
-
 {% for item in ifupdown_interfaces %}
 # Configuration for {{ item.interface }}
 {% if item.type in ["interface", "bridge", "loopback"] %}
@@ -11,22 +11,17 @@ iface {{ item.interface }} inet {{ item.mode }}
     hwaddress {{ item.macAddress }}
 {% endif %}
 {% if item.ip is defined %}
-    address {{ item.ip}}{% if item.mask is defined %}/{{ item.mask }}{% endif %}
-{% endif %}
-
+{# NOTE: Emit this newline explicitly because the inline mask conditional is trimmed. #}
+    address {{ item.ip }}{% if item.mask is defined %}/{{ item.mask }}{% endif %}{{ "\n" }}{% endif %}
 {% if item.gateway is defined %}
-    gateway {{ item.gateway}}
+    gateway {{ item.gateway }}
 {% endif %}
 {% if item.dns is defined and item.dns|length > 0 %}
-    dns-nameservers{% for d in item.dns %} {{d}}{% endfor %}
+    dns-nameservers{% for d in item.dns %} {{ d }}{% endfor %}
 {% endif %}
-
-{% if item.type in ['bridge'] %}
-    bridge-ports {% if item.bridge_port is defined %}{{ item.bridge_port }}{% else %}none{% endif %}
-
+{% endif %}
+{% if item.type == "bridge" %}
+    bridge-ports {{ item.bridge_port | default('none') }}
     bridge-stp off
-    bridge-fd 0
 {% endif %}
-
-{% endif %}
-{% endfor %}
+{{ "\n" if not loop.last else "" }}{% endfor %}

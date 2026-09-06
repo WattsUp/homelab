@@ -7,3 +7,4 @@ prompt.md
 # Secrets
 .vault_pass
 *.har
+*.log
