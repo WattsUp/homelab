@@ -8,6 +8,8 @@
 - name: Setup interfaces with netplan
   hosts: eth_netplan
   roles:
+    - role: connection_mark_routing
+      when: connection_mark_routing is defined
     - role: netplan_vlan
       netplan_vlan_vlans: "{{ vlans }}"
       netplan_vlan_mac: "{{ eth_services_mac }}"

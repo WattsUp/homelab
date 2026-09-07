@@ -32,16 +32,17 @@ vlans:
         via: "{{ vlan_networking.ip }}.1"
         table: 101
     routing_policies:
-      # Docker's reverse-DNAT selects a route before translating the source
-      # address to the published proxy address, so match its bridge subnet.
-      - from: "172.18.0.0/16"
+      # Route only replies to connections received on the published proxy IP.
+      # connection_mark_routing restores this mark before Docker reverse-DNAT
+      # selects the egress route.
+      - mark: 1
         to: "{{ vlan_management.ip }}.0/24"
         table: 101
         priority: 100
-      - from: "{{ ip_reverse_proxy }}/32"
-        to: "{{ vlan_management.ip }}.0/24"
-        table: 101
-        priority: 101
+connection_mark_routing:
+  ingress_interface: eth-serv.401
+  ingress_address: "{{ ip_reverse_proxy }}"
+  mark: 1
 vlans_extras:
   eth-mgmt:
     match:
