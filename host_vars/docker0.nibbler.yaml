@@ -25,6 +25,23 @@ vlans:
         # interface. DNS0 remains reachable to LAN clients at 10.40.1.2, but
         # docker0 itself uses pfSense for its host-level resolver.
         - "{{ vlan_networking.ip }}.1"
+    routes:
+      # Return traffic for Docker ports published on the networking VLAN must
+      # traverse pfSense, which received the original connection on management.
+      - to: "{{ vlan_management.ip }}.0/24"
+        via: "{{ vlan_networking.ip }}.1"
+        table: 101
+    routing_policies:
+      # Docker's reverse-DNAT selects a route before translating the source
+      # address to the published proxy address, so match its bridge subnet.
+      - from: "172.18.0.0/16"
+        to: "{{ vlan_management.ip }}.0/24"
+        table: 101
+        priority: 100
+      - from: "{{ ip_reverse_proxy }}/32"
+        to: "{{ vlan_management.ip }}.0/24"
+        table: 101
+        priority: 101
 vlans_extras:
   eth-mgmt:
     match:
