@@ -1,9 +1,18 @@
 ---
 uptime_password: admin
-
-uptime_network: default
-uptime_ip: "0.0.0.0"
-
+uptime_network: services
+uptime_extra_networks: []
+uptime_ipv4_address: ""
+uptime_api_host_ip: "127.0.0.1"
+uptime_api_url: ""
+uptime_api_network: ""
+uptime_api_delegate: localhost
+uptime_api_venv: /opt/uptime-kuma-api
+uptime_api_python: "{{ uptime_api_venv }}/bin/python"
+uptime_recreate: false
+# Static names for HTTP monitors that intentionally bypass container DNS.
+uptime_etc_hosts: {}
+uptime_dns_servers: []
 # HTTP sources to monitor
 uptime_monitors_http: []
 # - name: Google
@@ -15,11 +24,15 @@ uptime_monitors_ping: []
 # - name: Google
 #   ip: 192.168.1.2
 
+# Monitor names that this role must remove during a topology migration.
+uptime_monitors_absent: []
 # DNS sources to monitor
 uptime_monitors_dns: []
 # - name: Google
 #   hostname: google.com (default)
 #   ip: 192.168.1.2 ip of DNS server
+#   record_type: A (default)
+#   interval: 60 (default)
 
 # TCP ports to monitor
 uptime_monitors_ports: []

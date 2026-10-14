@@ -3,8 +3,8 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ admin }}"
-    group: "{{ admin }}"
+    owner: "{{ nummus_owner }}"
+    group: "{{ nummus_group }}"
     mode: "0755"
   with_items:
     - /etc/nummus
@@ -22,8 +22,8 @@
   ansible.builtin.copy:
     src: "/home/{{ admin }}/Code/nummus-importers/importers/"
     dest: /etc/nummus/portfolio.importers/
-    owner: "{{ admin }}"
-    group: "{{ admin }}"
+    owner: "{{ nummus_owner }}"
+    group: "{{ nummus_group }}"
     mode: "0755"
   notify:
     - Restart nummus
@@ -35,13 +35,8 @@
     pull: always
     networks:
       - name: "{{ nummus_network }}"
-        ipv4_address: "{{ nummus_ip }}"
-    dns_servers:
-      - "{{ ip_dns_0 }}"
-      - "{{ ip_dns_1 }}"
-    published_ports:
-      - 8000/tcp
-      - 8001/tcp
+    comparisons:
+      networks: strict
     restart_policy: unless-stopped
     state: started
     volumes:

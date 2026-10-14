@@ -8,6 +8,8 @@
 - name: Setup interfaces with netplan
   hosts: eth_netplan
   roles:
+    - role: connection_mark_routing
+      when: connection_mark_routing is defined
     - role: netplan_vlan
       netplan_vlan_vlans: "{{ vlans }}"
       netplan_vlan_mac: "{{ eth_services_mac }}"
@@ -28,16 +30,20 @@
           mode: loopback
         - interface: eth-mgmt
           type: interface
+          mode: manual
+        - interface: vmbr0
+          type: bridge
           mode: static
           ip: "{{ ip_management }}"
           mask: 24
           gateway: "{{ vlan_management.ip }}.1"
+          bridge_port: eth-mgmt
         - interface: eth-bridge
-          type:
+          type: interface
           mode: manual
-        - interface: vmbr0
-          mode: static
+        - interface: vmbr1
           type: bridge
+          mode: manual
           bridge_port: eth-bridge
       ifupdown_dns_addresses:
         - "{{ ip_dns_0 }}"

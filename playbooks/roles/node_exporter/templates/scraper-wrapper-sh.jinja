@@ -2,6 +2,6 @@
 set -e
 
 while true;
-do {{ item }} | sponge /var/lib/node_exporter/{{ item | basename }}.prom
+do {{ scraper_path }} | sponge /var/lib/node_exporter/{{ scraper_path | basename }}.prom
 sleep 15
 done;

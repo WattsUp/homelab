@@ -1,16 +1,19 @@
 ---
-reverse_proxy_network: default
+# User-defined bridge shared by the reverse proxy and Docker-resident services.
+reverse_proxy_network: "{{ docker_services_network | default('services') }}"
+# Additional networks for upstreams that intentionally remain outside the
+# shared services bridge, such as DNS0 on the networking VLAN.
+reverse_proxy_extra_networks: []
+# Host address on which the public HTTP(S) ingress is published.
 reverse_proxy_ip:
-
 reverse_proxy_wildcard: "{{ ansible_domain }}"
 reverse_proxy_name: reverse-proxy
 reverse_proxy_conf: default
-
 # List of services to route through reverse proxy
 # {{ name }}.{{ reverse_proxy_wildcard }}:[80|443] -> {{ url }}
 reverse_proxy_services: []
 # - name: service
-#   ip: 192.168.1.2
+#   host: service (Docker DNS name) or ip: 192.168.1.2 (external service)
 #   port: 80 (default)
 #   scheme: http (default)
 #   suffix: / (default)

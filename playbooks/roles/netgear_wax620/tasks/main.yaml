@@ -75,7 +75,7 @@
           Accept: application/json
           Content-Type: application/json
           Cookie: >-
-            {{ netgear_wax620_authentication.cookies_string | default(netgear_wax620_login_session.cookies_string, true) }}; ssid={{ (netgear_wax620_authentication.content | from_json) .system.security_token | b64encode }}
+            {{ netgear_wax620_authentication.cookies_string | default(netgear_wax620_login_session.cookies_string, true) }}; ssid={{ (netgear_wax620_authentication.content | from_json).system.security_token | b64encode }}
           Origin: "https://{{ netgear_wax620_host }}"
           Referer: "https://{{ netgear_wax620_host }}/"
           X-Requested-With: XMLHttpRequest

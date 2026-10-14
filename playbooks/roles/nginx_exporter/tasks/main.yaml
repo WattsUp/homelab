@@ -20,12 +20,8 @@
       -config-file /etc/prometheus-nginxlog-exporter.yaml
     networks:
       - name: "{{ nginx_exporter_network }}"
-        ipv4_address: "{{ nginx_exporter_ip }}"
-    dns_servers:
-      - "{{ ip_dns_0 }}"
-      - "{{ ip_dns_1 }}"
-    published_ports:
-      - 4040/tcp
+    comparisons:
+      networks: strict
     restart_policy: unless-stopped
     state: started
     volumes:

@@ -19,10 +19,9 @@
   become: true
   community.docker.docker_container:
     name: pihole
-    image: cbcrowe/pihole-unbound:2024.03.2
+    image: "{{ pihole_image }}"
     image_name_mismatch: recreate
     hostname: "{{ pihole_hostname }}"
-    domainname: "{{ pihole_domain }}"
     networks:
       - name: "{{ pihole_network }}"
         ipv4_address: "{{ pihole_ip }}"
@@ -39,18 +38,13 @@
       - "/etc/pihole/pihole:/etc/pihole:rw"
       - "/etc/pihole/dnsmasq.d:/etc/dnsmasq.d:rw"
     env:
-      FTLCONF_REPLY_ADDR4: "{{ pihole_ip }}"
-      FTLCONF_LOCAL_IPV4: "{{ pihole_ip }}"
       TZ: "{{ timezone }}"
-      WEBPASSWORD: "{{ pihole_password }}"
-      WEBTHEME: default-dark
+      FTLCONF_webserver_api_password: "{{ pihole_password }}"
       # Conditional forwarding for DHCP hostname resolution
-      REV_SERVER: "true"
-      REV_SERVER_CIDR: "{{ pihole_dhcp_subnet }}"
-      REV_SERVER_TARGET: "{{ pihole_dhcp_server }}"
-      REV_SERVER_DOMAIN: ""
-      DNS_FQDN_REQUIRED: "true"
-      PIHOLE_WEBPORT: "80"
-      PIHOLE_DNS_: 127.0.0.1#5335
-      DNSSEC: "true"
-      DNSMASQ_LISTENING: single
+      FTLCONF_dns_revServers: "true,{{ pihole_dhcp_subnet }},{{ pihole_dhcp_server }},"
+      FTLCONF_dns_domainNeeded: "true"
+      FTLCONF_dns_upstreams: "{{ pihole_upstreams | join('\n') }}"
+      FTLCONF_dns_dnssec: "{{ pihole_dnssec | string | lower }}"
+      FTLCONF_dns_listeningMode: SINGLE
+      # Pi-hole v6 ignores custom dnsmasq files unless this is explicitly set.
+      FTLCONF_misc_etc_dnsmasq_d: "true"

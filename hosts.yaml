@@ -5,7 +5,6 @@ ungrouped:
     sal:
     morbo:
     linda:
-    scruffy:
 wireless_access_points:
   hosts:
     linda:
@@ -16,36 +15,41 @@ managed_switches:
 hw_nibbler:
   hosts:
     nibbler:
-    vm0.nibbler:
+    docker0.nibbler:
+    dns1.nibbler:
     pfsense.nibbler:
     haos.nibbler:
 ntp_clients:
   hosts:
     farnsworth:
     nibbler:
-    vm0.nibbler:
+    docker0.nibbler:
+    dns1.nibbler:
 etc_hosts:
   hosts:
     farnsworth:
     nibbler:
-    vm0.nibbler:
+    docker0.nibbler:
+    dns1.nibbler:
     pfsense.nibbler:
 eth_netplan:
   hosts:
-    vm0.nibbler:
+    docker0.nibbler:
+    dns1.nibbler:
 eth_ifupdown:
   hosts:
     nibbler:
 nodes:
   hosts:
     nibbler:
-    vm0.nibbler:
 docker:
   hosts:
-    vm0.nibbler:
+    docker0.nibbler:
+    dns1.nibbler:
 nameservers:
   hosts:
-    vm0.nibbler:
+    docker0.nibbler:
+    dns1.nibbler:
 pve:
   hosts:
     nibbler:

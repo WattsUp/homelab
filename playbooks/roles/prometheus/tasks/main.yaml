@@ -58,27 +58,23 @@
     src: files/dashboards
     owner: false
     group: false
-
 # Docker containers
 - name: Create alertmanager
   community.docker.docker_container:
     image: prom/alertmanager:v0.27.0
     image_name_mismatch: recreate
     name: alertmanager
-    command: >-
+    command: |-
       --config.file=/etc/prometheus/alertmanager.yaml
       --storage.path=/alertmanager
     networks:
       - name: "{{ prometheus_alertmanager_network }}"
-        ipv4_address: "{{ prometheus_alertmanager_ip
-          }}"
-    dns_servers:
-      - "{{ ip_dns_0 }}"
-      - "{{ ip_dns_1 }}"
+    comparisons:
+      networks: strict
     published_ports:
-      - 9093/tcp
+      - "127.0.0.1:9093:9093/tcp"
     recreate: >-
-      {{ prometheus_alertmanager_config.changed }}
+      {{ prometheus_alertmanager_config.changed | default(false) }}
     restart_policy: unless-stopped
     state: started
     volumes:
@@ -89,22 +85,20 @@
     image: prom/prometheus:v{{ prometheus_version }}
     image_name_mismatch: recreate
     name: prometheus
-    command: >-
+    command: |-
       --config.file=/etc/prometheus/prometheus.yaml
       --storage.tsdb.path=/prometheus --storage.tsdb.retention.time=1y
       --web.console.libraries=/usr/share/prometheus/console_libraries
       --web.console.templates=/usr/share/prometheus/consoles
     networks:
       - name: "{{ prometheus_network }}"
-        ipv4_address: "{{ prometheus_ip }}"
-    dns_servers:
-      - "{{ ip_dns_0 }}"
-      - "{{ ip_dns_1 }}"
+    comparisons:
+      networks: strict
     published_ports:
-      - 9090/tcp
-    recreate: >-
-      {{ prometheus_configuration.changed or
-         prometheus_alert_rules.changed }}
+      - "127.0.0.1:9090:9090/tcp"
+    recreate: |-
+      {{ prometheus_configuration.changed | default(false) or
+         prometheus_alert_rules.changed | default(false) }}
     restart_policy: unless-stopped
     state: started
     volumes:
@@ -122,22 +116,19 @@
       --config=/etc/grafana/grafana.ini
     networks:
       - name: "{{ prometheus_grafana_network }}"
-        ipv4_address: "{{ prometheus_grafana_ip }}"
-    dns_servers:
-      - "{{ ip_dns_0 }}"
-      - "{{ ip_dns_1 }}"
+    comparisons:
+      networks: strict
     published_ports:
-      - 3000/tcp
-    recreate: >-
-      {{ prometheus_grafana_configuration.changed or
-         prometheus_grafana_dashboards.changed }}
+      - "127.0.0.1:3000:3000/tcp"
+    recreate: |-
+      {{ prometheus_grafana_configuration.changed | default(false) or
+         prometheus_grafana_dashboards.changed | default(false) }}
     restart_policy: unless-stopped
     state: started
     volumes:
       - /etc/grafana:/etc/grafana:ro
       - grafana-data:/var/lib/grafana
   register: prometheus_grafana_container
-
 # In certain situations if a manual change means prometheus in docker auto
 # restarted but a host mounted file wasn't present it'll be auto created as a
 # directory instead of a file
@@ -151,15 +142,12 @@
 - name: Assert docker host file mounts
   ansible.builtin.assert:
     that: "item.stat.isreg"
-  with_items: "{{ prometheus_docker_file_mounts.results
-    }}"
+  with_items: "{{ prometheus_docker_file_mounts.results }}"
   no_log: true
-
 # Configure grafana
 - name: Wait for Grafana HTTP API to start
-  delegate_to: localhost
   ansible.builtin.uri:
-    url: "http://{{ prometheus_grafana_ip }}:3000/api/health"
+    url: "http://127.0.0.1:3000/api/health"
     status_code: 200
     timeout: 5
   register: prometheus_grafana_health
@@ -167,9 +155,8 @@
   delay: 2
   until: prometheus_grafana_health.status == 200
 - name: Rename grafana organization
-  delegate_to: localhost
   ansible.builtin.uri:
-    url: "http://{{ prometheus_grafana_ip }}:3000/api/orgs/1"
+    url: "http://127.0.0.1:3000/api/orgs/1"
     url_username: "{{ prometheus_grafana_user }}"
     url_password: "{{ prometheus_grafana_password }}"
     force_basic_auth: true

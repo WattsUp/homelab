@@ -1,14 +1,29 @@
 ---
 - name: Install reverse proxy
-  hosts: vm0.nibbler
+  hosts: docker0.nibbler
   roles:
     - role: reverse_proxy
       become: true
-      reverse_proxy_network: "{{ 'vlan-' + vlan_networking.name }}"
+      reverse_proxy_network: "{{ docker_services_network }}"
       reverse_proxy_ip: "{{ ip_reverse_proxy }}"
-      reverse_proxy_exporter_network: "{{ 'vlan-' + vlan_management.name
-        }}"
-      reverse_proxy_exporter_ip: "{{ ip_reverse_proxy_exporter }}"
+      reverse_proxy_extra_networks:
+        - name: "{{ docker_uptime_network }}"
+          # NOTE: These aliases keep Kuma's HTTPS hostname and SNI intact while
+          # sending GUI checks directly over the private Docker bridge.
+          aliases:
+            - "dns0.{{ domain_lan }}"
+            - "dns1.{{ domain_lan }}"
+            - "morbo.{{ domain_lan }}"
+            - "linda.{{ domain_lan }}"
+            - "prometheus.{{ domain_lan }}"
+            - "grafana.{{ domain_lan }}"
+            - "nummus.{{ domain_lan }}"
+            - "home.{{ domain_lan }}"
+        - name: "{{ 'vlan-' + vlan_networking.name }}"
+          ipv4_address: "{{ ip_reverse_proxy_dns }}"
+        - name: "{{ 'vlan-' + vlan_automation.name }}"
+          ipv4_address: "{{ ip_reverse_proxy_automation }}"
+      reverse_proxy_exporter_network: "{{ docker_services_network }}"
       reverse_proxy_wildcard: "{{ domain_lan }}"
       reverse_proxy_conf: private
       reverse_proxy_services:
@@ -36,6 +51,10 @@
           scheme: https
           port: 443
           header_host: "{{ hostvars['linda'].ip_management }}"
+        - name: nibbler
+          ip: "{{ hostvars['nibbler'].ip_management }}"
+          scheme: https
+          port: 443
         - name: leela
           ip: "{{ hostvars['leela'].ip_management }}"
           scheme: https
@@ -45,47 +64,43 @@
           scheme: https
           port: 443
         - name: uptime
-          ip: "{{ ip_uptime }}"
+          host: uptime-kuma
           port: 3001
         - name: prometheus
-          ip: "{{ ip_prometheus }}"
+          host: prometheus
           port: 9090
         - name: alertmanager
-          ip: "{{ ip_alertmanager }}"
+          host: alertmanager
           port: 9093
         - name: grafana
-          ip: "{{ ip_grafana }}"
+          host: grafana
           port: 3000
         - name: dns0-exporter
           ip: "{{ ip_dns_exporter_0 }}"
           port: 9617
-        - name: dns1-exporter
-          ip: "{{ ip_dns_exporter_1 }}"
-          port: 9617
-        - name: speedtest
-          ip: "{{ ip_speedtest_exporter }}"
-          port: 9798
         - name: ntp-exporter
-          ip: "{{ ip_ntp_exporter }}"
+          host: ntp-exporter
           port: 9123
         - name: nginx-exporter
-          ip: "{{ ip_nginx_exporter }}"
+          host: nginx-exporter
           port: 4040
         - name: pve-exporter
-          ip: "{{ ip_pve_exporter }}"
+          host: pve-exporter
           port: 9221
         - name: beehive
           ip: "{{ ip_beehive }}"
         - name: nummus
-          ip: "{{ ip_nummus }}"
+          host: nummus
           port: 8000
         - name: home
           ip: "{{ ip_home_assistant }}"
           port: 8123
+          # Home Assistant has no trusted-proxy entry for this proxy address.
+          # Keep the service reachable without trusting arbitrary client IPs.
+          forwarded_headers: false
 - name: Install nginx exporter
-  hosts: vm0.nibbler
+  hosts: docker0.nibbler
   roles:
     - role: nginx_exporter
       become: true
-      nginx_exporter_network: "{{ 'vlan-' + vlan_management.name }}"
-      nginx_exporter_ip: "{{ ip_nginx_exporter }}"
+      nginx_exporter_network: "{{ docker_services_network }}"

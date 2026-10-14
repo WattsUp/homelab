@@ -1,4 +1,18 @@
 ---
+- name: Install Uptime Kuma API virtual environment support
+  become: true
+  delegate_to: "{{ uptime_api_delegate }}"
+  ansible.builtin.apt:
+    name: python3-venv
+    state: present
+    update_cache: true
+- name: Install Uptime Kuma API client
+  become: true
+  delegate_to: "{{ uptime_api_delegate }}"
+  ansible.builtin.pip:
+    name: uptime-kuma-api
+    virtualenv: "{{ uptime_api_venv }}"
+    virtualenv_command: /usr/bin/python3 -m venv
 - name: Make directories
   ansible.builtin.file:
     path: "{{ item }}"
@@ -12,40 +26,60 @@
     name: uptime-kuma
     image: louislam/uptime-kuma:1.23.13
     image_name_mismatch: recreate
-    networks:
-      - name: "{{ uptime_network }}"
-        ipv4_address: "{{ uptime_ip }}"
-    dns_servers:
-      - "{{ ip_dns_0 }}"
-      - "{{ ip_dns_1 }}"
-    published_ports:
-      - 3001/tcp
+    networks: "{{ [{'name': uptime_network} | combine({'ipv4_address': uptime_ipv4_address} if uptime_ipv4_address else {})] + uptime_extra_networks }}"
+    comparisons:
+      networks: strict
+      # NOTE: Removing a static mapping must recreate the container without it.
+      etc_hosts: strict
+    etc_hosts: "{{ uptime_etc_hosts }}"
+    dns_servers: "{{ uptime_dns_servers }}"
+    published_ports: "{{ uptime_api_host_ip | ternary([uptime_api_host_ip + ':3001:3001/tcp'], []) }}"
+    recreate: "{{ uptime_recreate }}"
     restart_policy: unless-stopped
     state: started
     volumes:
       - "/etc/uptime:/app/data:rw"
+- name: Inspect Uptime Kuma container
+  community.docker.docker_container_info:
+    name: uptime-kuma
+  register: uptime_container
 - name: Generate url
   ansible.builtin.set_fact:
-    uptime_url: "http://{{ uptime_ip }}:3001"
+    uptime_url: "{{ uptime_api_url | default('http://' + (uptime_container.container.NetworkSettings.Networks[uptime_api_network].IPAddress if uptime_api_network else uptime_api_host_ip) + ':3001', true) }}"
+- name: Wait for Uptime Kuma HTTP API to start
+  delegate_to: "{{ uptime_api_delegate }}"
+  ansible.builtin.uri:
+    url: "{{ uptime_url }}"
+    status_code: 200
+    timeout: 5
+  register: uptime_health
+  retries: 30
+  delay: 2
+  until: uptime_health.status == 200
 - name: Setup credentials
-  delegate_to: localhost
+  delegate_to: "{{ uptime_api_delegate }}"
+  vars:
+    ansible_python_interpreter: "{{ uptime_api_python }}"
   lucasheld.uptime_kuma.setup:
     api_url: "{{ uptime_url }}"
     api_username: admin
     api_password: "{{ uptime_password }}"
 - name: Generate token
-  delegate_to: localhost
+  delegate_to: "{{ uptime_api_delegate }}"
+  vars:
+    ansible_python_interpreter: "{{ uptime_api_python }}"
   lucasheld.uptime_kuma.login:
     api_url: "{{ uptime_url }}"
     api_username: admin
     api_password: "{{ uptime_password }}"
   register: uptime_result
 - name: Extract token
-  delegate_to: localhost
   ansible.builtin.set_fact:
     uptime_token: "{{ uptime_result.token }}"
 - name: Setup notifications
-  delegate_to: localhost
+  delegate_to: "{{ uptime_api_delegate }}"
+  vars:
+    ansible_python_interpreter: "{{ uptime_api_python }}"
   lucasheld.uptime_kuma.notification:
     api_url: "{{ uptime_url }}"
     api_token: "{{ uptime_token }}"
@@ -56,7 +90,9 @@
     applyExisting: true
     state: present
 - name: Add HTTP monitors
-  delegate_to: localhost
+  delegate_to: "{{ uptime_api_delegate }}"
+  vars:
+    ansible_python_interpreter: "{{ uptime_api_python }}"
   lucasheld.uptime_kuma.monitor:
     api_url: "{{ uptime_url }}"
     api_token: "{{ uptime_token }}"
@@ -68,8 +104,20 @@
     notification_names:
       - discord
   loop: "{{ uptime_monitors_http }}"
+- name: Remove retired monitors
+  delegate_to: "{{ uptime_api_delegate }}"
+  vars:
+    ansible_python_interpreter: "{{ uptime_api_python }}"
+  lucasheld.uptime_kuma.monitor:
+    api_url: "{{ uptime_url }}"
+    api_token: "{{ uptime_token }}"
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ uptime_monitors_absent }}"
 - name: Add ping monitors
-  delegate_to: localhost
+  delegate_to: "{{ uptime_api_delegate }}"
+  vars:
+    ansible_python_interpreter: "{{ uptime_api_python }}"
   lucasheld.uptime_kuma.monitor:
     api_url: "{{ uptime_url }}"
     api_token: "{{ uptime_token }}"
@@ -81,22 +129,27 @@
       - discord
   loop: "{{ uptime_monitors_ping }}"
 - name: Add DNS monitors
-  delegate_to: localhost
+  delegate_to: "{{ uptime_api_delegate }}"
+  vars:
+    ansible_python_interpreter: "{{ uptime_api_python }}"
   lucasheld.uptime_kuma.monitor:
     api_url: "{{ uptime_url }}"
     api_token: "{{ uptime_token }}"
     name: "{{ item.name }}"
     type: dns
-    hostname: "{{ item.hostname | default('google.com')
-      }}"
+    hostname: "{{ item.hostname | default('google.com') }}"
     dns_resolve_server: "{{ item.ip }}"
+    dns_resolve_type: "{{ item.record_type | default('A') }}"
     port: 53
+    interval: "{{ item.interval | default(60) }}"
     state: present
     notification_names:
       - discord
   loop: "{{ uptime_monitors_dns }}"
 - name: Add port monitors
-  delegate_to: localhost
+  delegate_to: "{{ uptime_api_delegate }}"
+  vars:
+    ansible_python_interpreter: "{{ uptime_api_python }}"
   lucasheld.uptime_kuma.monitor:
     api_url: "{{ uptime_url }}"
     api_token: "{{ uptime_token }}"

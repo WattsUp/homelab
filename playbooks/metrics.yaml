@@ -1,6 +1,6 @@
 ---
 - name: Create exporters
-  hosts: vm0.nibbler
+  hosts: docker0.nibbler
   tasks:
     - name: Install pihole-exporter for dns0
       become: true
@@ -12,8 +12,7 @@
           - name: "{{ 'vlan-' + vlan_management.name }}"
             ipv4_address: "{{ ip_dns_exporter_0 }}"
         dns_servers:
-          - "{{ ip_dns_0 }}"
-          - "{{ ip_dns_1 }}"
+          - "{{ vlan_management.ip }}.1"
         published_ports:
           - 9617/tcp
         restart_policy: unless-stopped
@@ -32,8 +31,7 @@
           - name: "{{ 'vlan-' + vlan_management.name }}"
             ipv4_address: "{{ ip_dns_exporter_1 }}"
         dns_servers:
-          - "{{ ip_dns_0 }}"
-          - "{{ ip_dns_1 }}"
+          - "{{ vlan_management.ip }}.1"
         published_ports:
           - 9617/tcp
         restart_policy: unless-stopped
@@ -42,38 +40,22 @@
           PIHOLE_HOSTNAME: "{{ ip_dns_1 }}"
           PIHOLE_PASSWORD: "{{ pihole_admin_password }}"
           PORT: "9617"
-    - name: Install speedtest-exporter
+    - name: Remove speedtest-exporter
       become: true
       community.docker.docker_container:
         name: speed-test
-        image: ghcr.io/miguelndecarvalho/speedtest-exporter:v3.5.4
-        image_name_mismatch: recreate
-        networks:
-          - name: "{{ 'vlan-' + vlan_management.name }}"
-            ipv4_address: "{{ ip_speedtest_exporter }}"
-        dns_servers:
-          - "{{ ip_dns_0 }}"
-          - "{{ ip_dns_1 }}"
-        published_ports:
-          - 9798/tcp
-        restart_policy: unless-stopped
-        state: started
+        state: absent
     - name: Install ntp-exporter
       become: true
       community.docker.docker_container:
         name: ntp-exporter
         image: quay.io/superq/chrony-exporter:v0.10.1
         image_name_mismatch: recreate
-        command: --chrony.address="{{ ip_ntp }}:323" --collector.tracking
-          --no-collector.sources
+        command: --chrony.address="{{ ip_ntp }}:323" --collector.tracking --no-collector.sources
         networks:
-          - name: "{{ 'vlan-' + vlan_management.name }}"
-            ipv4_address: "{{ ip_ntp_exporter }}"
-        dns_servers:
-          - "{{ ip_dns_0 }}"
-          - "{{ ip_dns_1 }}"
-        published_ports:
-          - 9123/tcp
+          - name: services
+        comparisons:
+          networks: strict
         restart_policy: unless-stopped
         state: started
     - name: Install pve-exporter
@@ -83,13 +65,13 @@
         image: prompve/prometheus-pve-exporter:3.4.3
         image_name_mismatch: recreate
         networks:
-          - name: "{{ 'vlan-' + vlan_management.name }}"
-            ipv4_address: "{{ ip_pve_exporter }}"
-        dns_servers:
-          - "{{ ip_dns_0 }}"
-          - "{{ ip_dns_1 }}"
-        published_ports:
-          - 9221/tcp
+          - name: services
+        comparisons:
+          networks: strict
+        # NOTE: Template the complete mapping because Docker does not render
+        # Jinja expressions used directly as etc_hosts dictionary keys.
+        etc_hosts: |-
+          {{ {('nibbler.' + domain_lan): hostvars['nibbler'].ip_management} }}
         restart_policy: unless-stopped
         state: started
         env:
@@ -113,13 +95,11 @@
         image: gcr.io/cadvisor/cadvisor:v0.49.1
         image_name_mismatch: recreate
         networks:
-          - name: "{{ 'vlan-' + vlan_management.name }}"
-            ipv4_address: "{{ ip_cadvisor }}"
-        dns_servers:
-          - "{{ ip_dns_0 }}"
-          - "{{ ip_dns_1 }}"
+          - name: services
+        comparisons:
+          networks: strict
         published_ports:
-          - 8080/tcp
+          - "{{ ip_management }}:8080:8080/tcp"
         restart_policy: unless-stopped
         state: started
         volumes:
@@ -129,18 +109,14 @@
           - "/var/lib/docker/:/var/lib/docker:ro"
           - "/dev/disk/:/dev/disk:ro"
 - name: Setup prometheus
-  hosts: vm0.nibbler
+  hosts: docker0.nibbler
   roles:
     - role: prometheus
       become: true
-      prometheus_network: "{{ 'vlan-' + vlan_management.name }}"
-      prometheus_ip: "{{ ip_prometheus }}"
-      prometheus_alertmanager_network: "{{ 'vlan-' + vlan_management.name
-        }}"
-      prometheus_alertmanager_ip: "{{ ip_alertmanager }}"
+      prometheus_network: services
+      prometheus_alertmanager_network: services
       prometheus_alertmanager_discord: "{{ alertmanager_discord }}"
-      prometheus_grafana_network: "{{ 'vlan-' + vlan_management.name }}"
-      prometheus_grafana_ip: "{{ ip_grafana }}"
+      prometheus_grafana_network: services
       prometheus_grafana_org: "{{ domain }}"
       prometheus_grafana_user: "{{ admin }}"
       prometheus_grafana_password: "{{ grafana_admin_password }}"
@@ -153,19 +129,16 @@
             - targets: ["{{ ip_dns_exporter_1 }}:9617"]
               labels:
                 host: "dns1"
-        - name: speedtest
-          scrape_interval: 10m
-          scrape_timeout: 60s
-          static_configs:
-            - targets: ["{{ ip_speedtest_exporter }}:9798"]
         - name: time
           static_configs:
-            - targets: ["{{ ip_ntp_exporter }}:9123"]
+            - targets: ["ntp-exporter:9123"]
         - name: nginx
           static_configs:
-            - targets: ["{{ ip_nginx_exporter }}:4040"]
+            - targets: ["nginx-exporter:4040"]
         - name: proxmox
           static_configs:
+            # NOTE: The exporter resolves this name through its managed
+            # /etc/hosts entry so that the TLS certificate name is preserved.
             - targets: ["nibbler.{{ domain_lan }}"]
           metrics_path: /pve
           relabel_configs:
@@ -174,7 +147,7 @@
             - source_labels: [__param_target]
               target_label: instance
             - target_label: __address__
-              replacement: "{{ ip_pve_exporter }}:9221"
+              replacement: "pve-exporter:9221"
         - name: nummus
           static_configs:
-            - targets: ["{{ ip_nummus }}:8001"]
+            - targets: ["nummus:8001"]

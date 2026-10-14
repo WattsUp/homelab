@@ -4,6 +4,11 @@
     path: /etc/nginx
     state: directory
     mode: "0755"
+- name: Create reverse proxy bridge network
+  community.docker.docker_network:
+    name: "{{ reverse_proxy_network }}"
+    driver: bridge
+    state: present
 - name: Generate configuration
   ansible.builtin.template:
     src: nginx-conf.jinja
@@ -16,15 +21,15 @@
     name: "{{ reverse_proxy_name }}"
     image: nginx:1.27.0
     image_name_mismatch: recreate
-    networks:
-      - name: "{{ reverse_proxy_network }}"
-        ipv4_address: "{{ reverse_proxy_ip }}"
+    networks: "{{ [{'name': reverse_proxy_network}] + reverse_proxy_extra_networks }}"
+    comparisons:
+      networks: strict
     dns_servers:
       - "{{ ip_dns_0 }}"
       - "{{ ip_dns_1 }}"
     published_ports:
-      - 80/tcp
-      - 443/tcp
+      - "{{ reverse_proxy_ip }}:80:80/tcp"
+      - "{{ reverse_proxy_ip }}:443:443/tcp"
     restart_policy: unless-stopped
     state: started
     volumes:

@@ -1,5 +1,7 @@
 ---
 # Default variables for nummus
-
-nummus_network: default
-nummus_ip:
+nummus_network: services
+# NOTE: The container runs as the python user (UID/GID 1000), which must write
+# its secret into the bind-mounted data directory.
+nummus_owner: "1000"
+nummus_group: "1000"

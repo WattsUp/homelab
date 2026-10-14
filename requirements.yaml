@@ -10,7 +10,7 @@ roles:
   - name: geerlingguy.docker
     version: 7.3.0
   - name: geerlingguy.certbot
-    version: 5.1.0
+    version: 5.4.1
   - name: mrlesmithjr.netplan
     version: v0.4.1
 collections:
@@ -21,6 +21,6 @@ collections:
   - name: lucasheld.uptime_kuma
     version: 1.2.0
   - name: ansible.posix
-    version: 1.5.4
+    version: 2.2.0
   - name: prometheus.prometheus
-    version: 0.17.0
+    version: 0.30.1

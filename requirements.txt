@@ -1,5 +1,5 @@
 ansible
-# Collection prometheus.prometheus 0.17.0 needs <2.17
-ansible-core<2.17
+# Keep the controller on the tested ansible-core 2.16 line.
+ansible-core>=2.16,<2.17
 pre-commit
 uptime-kuma-api==1.2.1

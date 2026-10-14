@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+
+table=mangle
+chain=CONNECTION_MARK_ROUTING
+mark={{ connection_mark_routing.mark }}
+ingress_interface={{ connection_mark_routing.ingress_interface }}
+ingress_address={{ connection_mark_routing.ingress_address }}
+
+iptables -w -t "$table" -N "$chain" 2>/dev/null || true
+iptables -w -t "$table" -F "$chain"
+iptables -w -t "$table" -C PREROUTING -j "$chain" 2>/dev/null || \
+  iptables -w -t "$table" -I PREROUTING 1 -j "$chain"
+
+# Restore the conntrack mark before routing container replies.
+iptables -w -t "$table" -A "$chain" -j CONNMARK --restore-mark --mask "$mark"
+
+# Mark new connections that arrived at Docker's published proxy address.
+iptables -w -t "$table" -A "$chain" -i "$ingress_interface" -d "$ingress_address" \
+  -m conntrack --ctstate NEW -j MARK --set-xmark "$mark/$mark"
+iptables -w -t "$table" -A "$chain" -i "$ingress_interface" -d "$ingress_address" \
+  -m conntrack --ctstate NEW -j CONNMARK --save-mark --mask "$mark"

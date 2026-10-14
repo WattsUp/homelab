@@ -1,15 +1,18 @@
 ---
 pihole_hostname: pihole
 pihole_domain: "{{ ansible_domain }}"
-
 pihole_password: admin
-
 pihole_network: default
 pihole_ip: "0.0.0.0"
-
+# Pi-hole v6 and Unbound are supplied by the maintained successor to the
+# deprecated cbcrowe/pihole-unbound image.
+pihole_image: mpgirro/pihole-unbound:2026.07.2
+# Unbound on 127.0.0.1:5335 is the sole DNSSEC validator.
+pihole_dnssec: false
+pihole_upstreams:
+  - 127.0.0.1#5335
 pihole_dhcp_subnet: "192.168.1.0/24"
 pihole_dhcp_server: "192.168.1.1"
-
 pihole_hostnames: []
 # - name: reverse-proxy
 #   ip: 192.168.1.2
