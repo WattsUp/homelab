@@ -139,7 +139,9 @@
     type: dns
     hostname: "{{ item.hostname | default('google.com') }}"
     dns_resolve_server: "{{ item.ip }}"
+    dns_resolve_type: "{{ item.record_type | default('A') }}"
     port: 53
+    interval: "{{ item.interval | default(60) }}"
     state: present
     notification_names:
       - discord

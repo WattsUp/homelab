@@ -66,7 +66,17 @@
           ip: "{{ ip_reverse_proxy }}"
         - name: home assistant Ping
           ip: "{{ ip_home_assistant }}"
-      uptime_monitors_dns: []
+      uptime_monitors_dns:
+        - name: DNS Primary external resolution
+          hostname: google.com
+          ip: "{{ ip_dns_0 }}"
+          record_type: A
+          interval: 60
+        - name: DNS Secondary external resolution
+          hostname: google.com
+          ip: "{{ ip_dns_1 }}"
+          record_type: A
+          interval: 60
       uptime_monitors_port:
         - name: DNS Primary port
           ip: "{{ ip_dns_0 }}"

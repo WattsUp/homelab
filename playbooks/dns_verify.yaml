@@ -1,0 +1,55 @@
+---
+# Read-only regression checks for the Pi-hole -> Unbound DNS path. Run after
+# dns.yaml and after any intentional Pi-hole container recreation.
+- name: Verify Pi-hole and Unbound DNS resolution
+  hosts: nameservers
+  become: true
+  tasks:
+    - name: Resolve managed local record through Pi-hole
+      ansible.builtin.command:
+        argv: [docker, exec, pihole, dig, "@127.0.0.1", "ntp.{{ domain_lan }}", +short]
+      register: pihole_local_dns
+      changed_when: false
+    - name: Confirm managed local record
+      ansible.builtin.assert:
+        that: ip_ntp in pihole_local_dns.stdout_lines
+        fail_msg: Pi-hole did not return the managed NTP record.
+    - name: Resolve wildcard local record through Pi-hole
+      ansible.builtin.command:
+        argv: [docker, exec, pihole, dig, "@127.0.0.1", "dnssec-regression.{{ domain_lan }}", +short]
+      register: pihole_wildcard_dns
+      changed_when: false
+    - name: Confirm wildcard local record
+      ansible.builtin.assert:
+        that: ip_reverse_proxy in pihole_wildcard_dns.stdout_lines
+        fail_msg: Pi-hole did not return the managed wildcard record.
+    - name: Resolve external A record through Pi-hole
+      ansible.builtin.command:
+        argv: [docker, exec, pihole, dig, "@127.0.0.1", google.com, A, +short]
+      register: pihole_external_dns
+      changed_when: false
+    - name: Confirm Pi-hole external lookup returned an address
+      ansible.builtin.assert:
+        that: pihole_external_dns.stdout_lines | length > 0
+        fail_msg: Pi-hole failed to resolve google.com.
+    - name: Resolve DNSSEC-valid domain through Unbound
+      ansible.builtin.command:
+        argv: [docker, exec, pihole, dig, "@127.0.0.1", -p, "5335", google.com, A, +dnssec, +short]
+      register: unbound_valid_dnssec
+      changed_when: false
+    - name: Confirm Unbound validated a signed domain
+      ansible.builtin.assert:
+        that: unbound_valid_dnssec.stdout_lines | length > 0
+        fail_msg: Unbound failed to resolve the DNSSEC-valid test domain.
+    - name: Query DNSSEC-invalid domain through Unbound
+      ansible.builtin.command:
+        argv: [docker, exec, pihole, dig, "@127.0.0.1", -p, "5335", dnssec-failed.org, A, +dnssec, +noall, +comments]
+      register: unbound_invalid_dnssec
+      changed_when: false
+      failed_when: false
+    - name: Confirm Unbound rejects DNSSEC-invalid domain
+      ansible.builtin.assert:
+        # NOTE: dig exits successfully after receiving a DNS error response.
+        that:
+          - "'status: SERVFAIL' in unbound_invalid_dnssec.stdout"
+        fail_msg: Unbound did not reject dnssec-failed.org with SERVFAIL.
